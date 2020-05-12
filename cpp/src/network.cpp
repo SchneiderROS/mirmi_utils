@@ -405,7 +405,6 @@ bool JsonWebsocketServer::start_listening(){
 
 void JsonWebsocketServer::stop_listening(){
     m_server.stop();
-    sleep(1);
     if(m_server_thread.joinable()){
         m_server_thread.join();
     }
@@ -457,7 +456,8 @@ bool JsonWebsocketServer::check_arguments(const nlohmann::json &request, const s
     return true;
 }
 
-JsonWebsocketClient::JsonWebsocketClient(const std::string& address, unsigned port, const std::string& endpoint):m_client(address+":"+std::to_string(port)+"/"+endpoint),m_response(nlohmann::json()),m_error_flag(false){
+JsonWebsocketClient::JsonWebsocketClient(const std::string& address, unsigned port, const std::string& endpoint):m_client(address+":"+std::to_string(port)+"/"+endpoint),m_response(nlohmann::json()),
+    m_error_flag(false),m_timeout_triggered(false){
 
     m_client.on_message = [this](std::shared_ptr<SimpleWeb::SocketClient<SimpleWeb::WS>::Connection> connection, std::shared_ptr<SimpleWeb::SocketClient<SimpleWeb::WS>::InMessage> in_message) {
         m_response = nlohmann::json::parse(in_message->string());
@@ -482,15 +482,23 @@ JsonWebsocketClient::JsonWebsocketClient(const std::string& address, unsigned po
     };
 }
 
-bool JsonWebsocketClient::send(const std::string &method, const nlohmann::json &request){
+bool JsonWebsocketClient::send(const std::string &method, const nlohmann::json &request, double timeout){
     nlohmann::json message;
     message["method"]=method;
     message["request"]=request;
     m_client.on_open = [&message](std::shared_ptr<SimpleWeb::SocketClient<SimpleWeb::WS>::Connection> connection) {
         connection->send(message.dump());
     };
+    m_timeout_thread = std::thread(&JsonWebsocketClient::wait_for_timeout,this,timeout);
     m_client.start();
+    m_stop_timeout=true;
+    if(m_timeout_thread.joinable()){
+        m_timeout_thread.join();
+    }
     if(m_error_flag){
+        return false;
+    }
+    if(m_timeout_triggered){
         return false;
     }
     return true;
@@ -500,11 +508,28 @@ void JsonWebsocketClient::get_response(nlohmann::json &response){
     response=m_response;
 }
 
-bool JsonWebsocketClient::call_method(const std::string &address, unsigned port, const std::string &endpoint, const std::string &method, const nlohmann::json &request, nlohmann::json &response){
+bool JsonWebsocketClient::call_method(const std::string &address, unsigned port, const std::string &endpoint, const std::string &method, const nlohmann::json &request, nlohmann::json &response, double timeout){
     JsonWebsocketClient client(address,port,endpoint);
-    bool result = client.send(method,request);
+    bool result = client.send(method,request,timeout);
     client.get_response(response);
     return result;
+}
+
+void JsonWebsocketClient::wait_for_timeout(double timeout){
+    m_stop_timeout=false;
+    m_timeout_triggered=false;
+    if(timeout < 0){
+        return;
+    }
+    int timeout_ms = static_cast<int>(timeout*1000);
+    std::chrono::high_resolution_clock::time_point t_0 = std::chrono::high_resolution_clock::now();
+    while(!m_stop_timeout && std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-t_0).count()<timeout_ms){
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+    if(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-t_0).count()>timeout_ms){
+        m_timeout_triggered=true;
+    }
+    m_client.stop();
 }
 
 JsonUDPServer::JsonUDPServer(unsigned port):m_port(port){

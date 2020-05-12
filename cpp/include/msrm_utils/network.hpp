@@ -253,7 +253,7 @@ public:
      * @param request The method parameters in a json object.
      * @return True if call was successful, false otherwise.
      */
-    bool send(const std::string& method, const nlohmann::json& request);
+    bool send(const std::string& method, const nlohmann::json& request, double timeout=-1);
     /**
      * @brief get_response Returns the response from the last call.
      * @param[out] response The response is written into the provided json object.
@@ -269,11 +269,15 @@ public:
      * @param[out] response Response from server
      * @return True if call was successful, false otherwise.
      */
-    static bool call_method(const std::string& address, unsigned port, const std::string& endpoint, const std::string& method,const nlohmann::json& request,nlohmann::json& response);
+    static bool call_method(const std::string& address, unsigned port, const std::string& endpoint, const std::string& method,const nlohmann::json& request,nlohmann::json& response, double timeout=-1);
 private:
+    void wait_for_timeout(double timeout);
     SimpleWeb::SocketClient<SimpleWeb::WS> m_client;
+    std::thread m_timeout_thread;
     nlohmann::json m_response;
     std::atomic<bool> m_error_flag;
+    std::atomic<bool> m_stop_timeout;
+    std::atomic<bool> m_timeout_triggered;
 };
 
 class JsonUDPServer : public IJsonMethodServer{
