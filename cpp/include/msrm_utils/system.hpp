@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace msrm_utils {
 
@@ -24,5 +25,7 @@ std::string get_path_executable(char **argv);
  * @return True if the process is currently running, false if not.
  */
 bool process_is_running(const std::string& process);
+
+std::vector<int> get_video_device_id(const std::string& device_name);
 
 }
