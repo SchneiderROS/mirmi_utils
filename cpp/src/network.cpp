@@ -734,10 +734,13 @@ bool JsonUDPClient::send(const std::string &method, const nlohmann::json &reques
     memset((char *) &m_si_other, 0, sizeof(m_si_other));
     m_si_other.sin_family = AF_INET;
     m_si_other.sin_port = htons(m_port);
-    if(inet_aton(m_address.c_str(), &m_si_other.sin_addr)!=0){
-        std::cout<<"Invalid address"<<std::endl;
+
+    if(inet_aton(m_address.c_str(), &m_si_other.sin_addr)==0){
+        std::cout<<"Invalid address: "<<m_address<<", port: "<<m_port<<std::endl;
         return false;
     }
+//    int res = inet_aton(m_address.c_str(), &m_si_other.sin_addr);
+
 
     nlohmann::json msg_json;
     msg_json["method"]=method;
@@ -798,8 +801,8 @@ bool UDPStreamSender::connect(){
     memset((char *) &m_si_other, 0, sizeof(m_si_other));
     m_si_other.sin_family = AF_INET;
     m_si_other.sin_port = htons(m_port);
-    if(inet_aton(m_address.c_str(), &m_si_other.sin_addr)!=0){
-        std::cout<<"Invalid address"<<std::endl;
+    if(inet_aton(m_address.c_str(), &m_si_other.sin_addr)==0){
+        std::cout<<"Invalid address: "<<m_address<<", port: "<<m_port<<std::endl;
         return false;
     }
     m_packet_cnt = 0;
