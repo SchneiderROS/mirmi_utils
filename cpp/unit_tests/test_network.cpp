@@ -1,5 +1,6 @@
 #include "msrm_utils/network.hpp"
 #include "msrm_utils/benchmarking.hpp"
+#include <utility>
 #include "catch/catch.hpp"
 
 namespace msrm_utils {
@@ -148,7 +149,7 @@ TEST_CASE("json udp communication","[network]"){
         request["b"].get_to(b);
         response["c"]=a+b;
         return response;
-    },{"a","b"});
+    },{ArgPair("a",{}),ArgPair("b",{})});
     REQUIRE(server.start_listening());
     nlohmann::json response;
     nlohmann::json request;

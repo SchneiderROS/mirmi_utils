@@ -270,11 +270,15 @@ void JsonRPCServer::stop_listening(){
     }
 }
 
-bool JsonRPCServer::bind_method(const std::string &name, std::function<nlohmann::json (const nlohmann::json &)> method, const std::vector<std::string> &arguments){
-    return m_server.Add(name,jsonrpccxx::MethodHandle(method),arguments);
+bool JsonRPCServer::bind_method(const std::string &name, std::function<nlohmann::json (const nlohmann::json &)> method, const std::vector<ArgPair> &arguments){
+    std::vector<std::string> arguments_only;
+    for(const auto& arg : arguments){
+        arguments_only.emplace_back(arg.argument);
+    }
+    return m_server.Add(name,jsonrpccxx::MethodHandle(method),arguments_only);
 }
 
-JsonRPCClient::JsonRPCClient(const char* host, int port, double timeout) : m_http_client(host, port), m_timeout(timeout),m_rpc_client(*this,jsonrpccxx::version::v2) {
+JsonRPCClient::JsonRPCClient(const char* host, int port, double timeout) : m_rpc_client(*this,jsonrpccxx::version::v2),m_http_client(host, port),m_timeout(timeout) {
     m_http_client.set_timeout_sec(timeout);
 }
 
@@ -432,25 +436,27 @@ bool JsonWebsocketServer::check_if_method_exists(const std::string& method){
     }
 }
 
-bool JsonWebsocketServer::bind_method(const std::string &name, std::function<nlohmann::json (const nlohmann::json& request)> method, const std::vector<std::string> &arguments){
+bool JsonWebsocketServer::bind_method(const std::string &name, std::function<nlohmann::json (const nlohmann::json& request)> method, const std::vector<ArgPair> &arguments){
     if(this->check_if_method_exists(name)){
         msrm_utils::print_error("Cannot bind method with name "+name+" since it already exists.");
         return false;
     }
-    m_method_callbacks.insert(std::pair<std::string,std::function<nlohmann::json(const nlohmann::json&)> >(name, method));
-    m_method_arguments.insert(std::pair<std::string,std::vector<std::string> >(name,arguments));
+    m_method_callbacks.insert(std::make_pair(name, method));
+    m_method_arguments.insert(std::make_pair(name,arguments));
     return true;
 }
 
-bool JsonWebsocketServer::check_arguments(const nlohmann::json &request, const std::vector<std::string> &arguments, nlohmann::json &response){
+bool JsonWebsocketServer::check_arguments(nlohmann::json &request, const std::vector<ArgPair> &arguments, nlohmann::json &response){
     if(!request.is_object() && !request.is_null()){
         response["result"]="Request must be a json object (can be null).";
         return false;
     }
-    for(const std::string& a : arguments){
-        if(request.find(a)==request.end()){
-            response["result"]="Could not find parameter "+a+" in request.";
+    for(const auto& arg : arguments){
+        if(request.find(arg.argument)==request.end() && !arg.default_value.has_value()){
+            response["result"]="Could not find parameter "+arg.argument+" in request.";
             return false;
+        }else if(request.find(arg.argument)==request.end() && arg.default_value.has_value()){
+            request[arg.argument]=arg.default_value.value();
         }
     }
     return true;
@@ -660,13 +666,13 @@ int JsonUDPServer::get_first_byte(char* msg){
     }
 }
 
-bool JsonUDPServer::bind_method(const std::string &name, std::function<nlohmann::json (const nlohmann::json &)> method, const std::vector<std::string> &arguments){
+bool JsonUDPServer::bind_method(const std::string& name, std::function<nlohmann::json(const nlohmann::json& request)> method, const std::vector<ArgPair> &arguments){
     if(this->check_if_method_exists(name)){
         msrm_utils::print_error("Cannot bind method with name "+name+" since it already exists.");
         return false;
     }
-    m_method_callbacks.insert(std::pair<std::string,std::function<nlohmann::json(const nlohmann::json&)> >(name, method));
-    m_method_arguments.insert(std::pair<std::string,std::vector<std::string> >(name,arguments));
+    m_method_callbacks.insert(std::make_pair(name, method));
+    m_method_arguments.insert(std::make_pair(name,arguments));
     return true;
 }
 
@@ -694,15 +700,17 @@ std::pair<bool,std::string> JsonUDPServer::message_preprocessing(nlohmann::json 
     return std::pair<bool,std::string>(true,"");
 }
 
-bool JsonUDPServer::check_arguments(const nlohmann::json &request, const std::vector<std::string> &arguments, nlohmann::json &response){
+bool JsonUDPServer::check_arguments(nlohmann::json &request, const std::vector<ArgPair> &arguments, nlohmann::json& response){
     if(!request.is_object() && !request.is_null()){
         response["result"]="Request must be a json object (can be null).";
         return false;
     }
-    for(const std::string& a : arguments){
-        if(request.find(a)==request.end()){
-            response["result"]="Could not find parameter "+a+" in request.";
+    for(const auto& arg : arguments){
+        if(request.find(arg.argument)==request.end() && !arg.default_value.has_value()){
+            response["result"]="Could not find parameter "+arg.argument+" in request.";
             return false;
+        }else if(request.find(arg.argument)==request.end() && arg.default_value.has_value()){
+            request[arg.argument]=arg.default_value.value();
         }
     }
     return true;

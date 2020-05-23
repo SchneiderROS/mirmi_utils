@@ -17,6 +17,7 @@
 #include <set>
 #include <map>
 #include <functional>
+#include <initializer_list>
 
 #include <simple-websocket-server/server_ws.hpp>
 #include <simple-websocket-server/client_ws.hpp>
@@ -89,6 +90,14 @@ std::string convert_ip_to_default_format(const std::string &ip);
  */
 std::string convert_ip_from_default_format(const std::string &ip);
 
+struct ArgPair{
+    ArgPair(std::string argument, std::optional<nlohmann::json> default_value):argument(argument),default_value(default_value){
+
+    }
+    const std::string argument;
+    const std::optional<nlohmann::json> default_value;
+};
+
 /*! Interface for json method servers */
 class IJsonMethodServer{
 public:
@@ -108,7 +117,7 @@ public:
      * @param arguments Argument names of the function.
      * @return
      */
-    virtual bool bind_method(const std::string& name, std::function<nlohmann::json(const nlohmann::json& request)> method, const std::vector<std::string> &arguments) = 0;
+    virtual bool bind_method(const std::string& name, std::function<nlohmann::json(const nlohmann::json& request)> method, const std::vector<ArgPair>& arguments) = 0;
 };
 
 /*! An rpc method server based on json.*/
@@ -141,7 +150,7 @@ public:
      * @param arguments Argument names of the function.
      * @return
      */
-    bool bind_method(const std::string& name, std::function<nlohmann::json(const nlohmann::json& request)> method, const std::vector<std::string> &arguments);
+    bool bind_method(const std::string& name, std::function<nlohmann::json(const nlohmann::json& request)> method, const std::vector<ArgPair>& arguments);
 
 private:
     std::thread m_server_thread;
@@ -224,17 +233,17 @@ public:
      * @param arguments Argument names of the function.
      * @return
      */
-    bool bind_method(const std::string& name, std::function<nlohmann::json(const nlohmann::json& request)> method, const std::vector<std::string>& arguments);
+    bool bind_method(const std::string& name, std::function<nlohmann::json(const nlohmann::json& request)> method, const std::vector<ArgPair>& arguments);
 
 private:
 
     std::pair<bool, std::string> message_preprocessing(nlohmann::json &message);
     bool check_if_method_exists(const std::string& method);
-    bool check_arguments(const nlohmann::json& request, const std::vector<std::string> &arguments, nlohmann::json& response);
+    bool check_arguments(nlohmann::json &request, const std::vector<ArgPair> &arguments, nlohmann::json& response);
 
     SimpleWeb::SocketServer<SimpleWeb::WS> m_server;
     std::map<std::string, std::function<nlohmann::json(nlohmann::json)> > m_method_callbacks;
-    std::map<std::string, std::vector<std::string> > m_method_arguments;
+    std::map<std::string, std::vector<ArgPair> > m_method_arguments;
     std::thread m_server_thread;
 };
 
@@ -308,7 +317,7 @@ public:
      * @param arguments Argument names of the function.
      * @return
      */
-    bool bind_method(const std::string& name, std::function<nlohmann::json(const nlohmann::json& request)> method, const std::vector<std::string> &arguments);
+    bool bind_method(const std::string& name, std::function<nlohmann::json(const nlohmann::json& request)> method, const std::vector<ArgPair>& arguments);
 private:
 
     void listen();
@@ -316,11 +325,11 @@ private:
     std::string read_message(const std::string& msg);
     std::string call_method(nlohmann::json &message);
     bool check_if_method_exists(const std::string& method);
-    bool check_arguments(const nlohmann::json& request, const std::vector<std::string> &arguments, nlohmann::json& response);
+    bool check_arguments(nlohmann::json &request, const std::vector<ArgPair> &arguments, nlohmann::json& response);
     std::pair<bool, std::string> message_preprocessing(nlohmann::json &message);
 
     std::map<std::string, std::function<nlohmann::json(nlohmann::json)> > m_method_callbacks;
-    std::map<std::string, std::vector<std::string> > m_method_arguments;
+    std::map<std::string, std::vector<ArgPair> > m_method_arguments;
     std::thread m_server_thread;
 
     std::atomic<bool> m_flag_keep_listening;
