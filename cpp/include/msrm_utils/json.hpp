@@ -1,9 +1,9 @@
 #pragma once
 
+#include <iostream>
 #include <array>
 #include <eigen3/Eigen/Core>
 #include <nlohmann/json.hpp>
-#include <iostream>
 
 namespace msrm_utils {
 

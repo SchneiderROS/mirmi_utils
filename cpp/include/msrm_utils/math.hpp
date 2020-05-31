@@ -1,8 +1,8 @@
 #pragma once
 
+#include <iostream>
 #include <array>
 #include <math.h>
-#include <iostream>
 
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Dense>

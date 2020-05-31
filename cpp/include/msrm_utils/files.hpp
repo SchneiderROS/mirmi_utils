@@ -1,10 +1,10 @@
 #pragma once
 
-#include <fstream>
-#include <iostream>
-#include <sstream>
 #include <string>
+#include <iostream>
 #include <array>
+#include <fstream>
+#include <sstream>
 #include <algorithm>
 #include <vector>
 #include <sys/stat.h>

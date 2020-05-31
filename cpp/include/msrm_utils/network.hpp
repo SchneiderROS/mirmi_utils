@@ -1,10 +1,11 @@
 #pragma once
 
-#include<iostream>
+#include <string>
+#include <iostream>
+#include <vector>
+#include <cstring>
 #include <stdio.h>
 #include <arpa/inet.h>
-#include <string>
-#include <vector>
 #include <stdlib.h>
 #include <ifaddrs.h>
 #include <netinet/in.h>
@@ -13,7 +14,6 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <cerrno>
-#include <cstring>
 #include <set>
 #include <map>
 #include <functional>
