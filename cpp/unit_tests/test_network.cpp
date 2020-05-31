@@ -5,59 +5,58 @@
 
 namespace msrm_utils {
 
-//TEST_CASE("ping","[network]"){
-//    REQUIRE(ping("192.168.3.121"));
-//    REQUIRE(ping("127.0.0.1"));
-//    REQUIRE(ping("0.0.0.0"));
-//    REQUIRE(ping("localhost"));
-//    REQUIRE(!ping("128.0.0.1"));
-//}
+TEST_CASE("ping","[network]"){
+    REQUIRE(ping("127.0.0.1"));
+    REQUIRE(ping("0.0.0.0"));
+    REQUIRE(ping("localhost"));
+    REQUIRE(!ping("128.0.0.1"));
+}
 
-//TEST_CASE("ip address check","[network]"){
-//    REQUIRE(!is_valid_ip_address("1"));
-//    REQUIRE(is_valid_ip_address("1.1.1.1"));
-//    REQUIRE(is_valid_ip_address("192.168.1.1"));
-//    REQUIRE(is_valid_ip_address("192.168.1.0"));
-//    REQUIRE(is_valid_ip_address("192.168.1.255"));
-//    REQUIRE(!is_valid_ip_address("192.168.1.256"));
-//    REQUIRE(!is_valid_ip_address("192.168.1.-1"));
-//    REQUIRE(!is_valid_ip_address("192.168.1.a"));
-//}
+TEST_CASE("ip address check","[network]"){
+    REQUIRE(!is_valid_ip_address("1"));
+    REQUIRE(is_valid_ip_address("1.1.1.1"));
+    REQUIRE(is_valid_ip_address("192.168.1.1"));
+    REQUIRE(is_valid_ip_address("192.168.1.0"));
+    REQUIRE(is_valid_ip_address("192.168.1.255"));
+    REQUIRE(!is_valid_ip_address("192.168.1.256"));
+    REQUIRE(!is_valid_ip_address("192.168.1.-1"));
+    REQUIRE(!is_valid_ip_address("192.168.1.a"));
+}
 
-//TEST_CASE("port check","[network]"){
-////    REQUIRE(!is_port_open("localhost",65536));
-////    REQUIRE(!is_port_open("localhost",0));
-//}
+TEST_CASE("port check","[network]"){
+//    REQUIRE(!is_port_open("localhost",65536));
+//    REQUIRE(!is_port_open("localhost",0));
+}
 
-//TEST_CASE("own ip","[network]"){
-//    REQUIRE(get_own_ip("lo")=="127.0.0.1");
-//    REQUIRE(get_own_ip("-lo-").has_value()==false);
-//}
+TEST_CASE("own ip","[network]"){
+    REQUIRE(get_own_ip("lo")=="127.0.0.1");
+    REQUIRE(get_own_ip("-lo-").has_value()==false);
+}
 
-//TEST_CASE("get ip by hostname","[network]"){
-//    REQUIRE(get_ip_by_hostname("127.0.0.1")=="127.0.0.1");
-//    REQUIRE(get_ip_by_hostname("localhost")=="127.0.0.1");
-//    REQUIRE(get_ip_by_hostname("localhost2").has_value()==false);
-//}
+TEST_CASE("get ip by hostname","[network]"){
+    REQUIRE(get_ip_by_hostname("127.0.0.1")=="127.0.0.1");
+    REQUIRE(get_ip_by_hostname("localhost")=="127.0.0.1");
+    REQUIRE(get_ip_by_hostname("localhost2").has_value()==false);
+}
 
-//TEST_CASE("get ip subnets","[network]"){
-//    std::map<std::string,std::string> subnets=get_subnets();
-//    auto lo = subnets.find("lo");
-//    REQUIRE(lo!=subnets.end());
-//    REQUIRE((*lo).second=="127.0.0.");
-//}
+TEST_CASE("get ip subnets","[network]"){
+    std::map<std::string,std::string> subnets=get_subnets();
+    auto lo = subnets.find("lo");
+    REQUIRE(lo!=subnets.end());
+    REQUIRE((*lo).second=="127.0.0.");
+}
 
-//TEST_CASE("get interfaces","[network]"){
-//    std::set<std::string> ifaces = get_ifaces();
-//    REQUIRE(ifaces.find("lo")!=ifaces.end());
-//}
+TEST_CASE("get interfaces","[network]"){
+    std::set<std::string> ifaces = get_ifaces();
+    REQUIRE(ifaces.find("lo")!=ifaces.end());
+}
 
-//TEST_CASE("faulty rpc server","[network]"){
-//    JsonRPCServer server("0.0.0.0",443);
-//    REQUIRE(!server.start_listening());
-//    JsonRPCServer server2("0.0.0.0",100000);
-//    REQUIRE(!server2.start_listening());
-//}
+TEST_CASE("faulty rpc server","[network]"){
+    JsonRPCServer server("0.0.0.0",443);
+    REQUIRE(!server.start_listening());
+    JsonRPCServer server2("0.0.0.0",100000);
+    REQUIRE(!server2.start_listening());
+}
 
 //TEST_CASE("rpc communication","[network]"){
 //    JsonRPCServer server_fail("0.0.0.0",443);
@@ -89,49 +88,49 @@ namespace msrm_utils {
 //    server.stop_listening();
 //}
 
-//TEST_CASE("faulty web socket server","[network]"){
+TEST_CASE("faulty web socket server","[network]"){
 //    JsonWebsocketServer server("0.0.0.0",443,"test_server");
 //    REQUIRE(!server.start_listening());
 //    JsonWebsocketServer server2("0.0.0.0",100000,"test_server");
 //    REQUIRE(!server2.start_listening());
-//}
+}
 
-//TEST_CASE("web socket communication","[network]"){
-//    JsonWebsocketServer server("0.0.0.0",10000,"test_server");
-//    server.bind_method("add",[&](const nlohmann::json& request)->nlohmann::json{
-//        double a,b;
-//        nlohmann::json response;
-//        request["a"].get_to(a);
-//        request["b"].get_to(b);
-//        response["c"]=a+b;
-//        return response;
-//    },{"a","b"});
-//    server.bind_method("sleep",[&](const nlohmann::json& request)->nlohmann::json{
-//        nlohmann::json response;
-//        sleep(5);
-//        return response;
-//    },{});
-//    REQUIRE(server.start_listening());
-//    nlohmann::json response;
-//    nlohmann::json request;
-//    request["a"]=4.5;
-//    request["b"]=2;
-//    JsonWebsocketClient::call_method("localhost",10000,"test_server","add",request,response);
-//    REQUIRE(response["result"]["c"]==6.5);
-//    REQUIRE(!JsonWebsocketClient::call_method("191.168.2.2",10000,"add",request,response));
-//    REQUIRE(!JsonWebsocketClient::call_method("localhost2",10000,"test_server","add",request,response));
-//    REQUIRE(!JsonWebsocketClient::call_method("localhost",10000,"test_server","add2",request,response));
-//    REQUIRE(!JsonWebsocketClient::call_method("localhost",10001,"test_server","add",request,response));
-//    REQUIRE(!JsonWebsocketClient::call_method("localhost",10000,"test_server2","add",request,response));
+TEST_CASE("web socket communication","[network]"){
+    JsonWebsocketServer server("0.0.0.0",10000,"test_server");
+    server.bind_method("add",[&](const nlohmann::json& request)->nlohmann::json{
+        double a,b;
+        nlohmann::json response;
+        request["a"].get_to(a);
+        request["b"].get_to(b);
+        response["c"]=a+b;
+        return response;
+    },{ArgPair("a",{}),ArgPair("b",{})});
+    server.bind_method("sleep",[&](const nlohmann::json& request)->nlohmann::json{
+        nlohmann::json response;
+        sleep(5);
+        return response;
+    },{});
+    REQUIRE(server.start_listening());
+    nlohmann::json response;
+    nlohmann::json request;
+    request["a"]=4.5;
+    request["b"]=2;
+    JsonWebsocketClient::call_method("localhost",10000,"test_server","add",request,response);
+    REQUIRE(response["result"]["c"]==6.5);
+    REQUIRE(!JsonWebsocketClient::call_method("191.168.2.2",10000,"test_server","add",request,response));
+    REQUIRE(!JsonWebsocketClient::call_method("localhost2",10000,"test_server","add",request,response));
+    REQUIRE(!JsonWebsocketClient::call_method("localhost",10000,"test_server","add2",request,response));
+    REQUIRE(!JsonWebsocketClient::call_method("localhost",10001,"test_server","add",request,response));
+    REQUIRE(!JsonWebsocketClient::call_method("localhost",10000,"test_server2","add",request,response));
 
-//    ScopedTimer<std::chrono::milliseconds> timer("websocket_timer");
-//    JsonWebsocketClient::call_method("localhost",10000,"test_server","sleep",request,response,2);
-//    timer.stop();
-//    ScopedTimer<std::chrono::milliseconds> timer2("websocket_timer2");
-//    JsonWebsocketClient::call_method("localhost",10000,"test_server","sleep",request,response,2);
-//    timer2.stop();
-//    server.stop_listening();
-//}
+    ScopedTimer<std::chrono::milliseconds> timer("websocket_timer");
+    JsonWebsocketClient::call_method("localhost",10000,"test_server","sleep",request,response,2);
+    timer.stop();
+    ScopedTimer<std::chrono::milliseconds> timer2("websocket_timer2");
+    JsonWebsocketClient::call_method("localhost",10000,"test_server","sleep",request,response,2);
+    timer2.stop();
+    server.stop_listening();
+}
 
 TEST_CASE("faulty udp server","[network]"){
     JsonUDPServer server(100000);
