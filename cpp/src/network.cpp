@@ -12,6 +12,9 @@
 namespace msrm_utils{
 
 bool ping(const char *ipaddr) {
+    if(!is_valid_ip_address(ipaddr)){
+        return false;
+    }
     char *command = NULL;
     FILE *fp;
     int stat = 0;

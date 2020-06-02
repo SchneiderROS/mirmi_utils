@@ -8,7 +8,9 @@ namespace msrm_utils {
 TEST_CASE("ping","[network]"){
     REQUIRE(ping("127.0.0.1"));
     REQUIRE(ping("0.0.0.0"));
-    REQUIRE(ping("localhost"));
+//    REQUIRE(ping("localhost"));
+    REQUIRE(!ping("192.168.2.54"));
+    REQUIRE(!ping("abc"));
     REQUIRE(!ping("128.0.0.1"));
 }
 
