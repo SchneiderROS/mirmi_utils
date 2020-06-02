@@ -24,7 +24,7 @@
 #include <jsonrpccxx/client.hpp>
 #include <jsonrpccxx/server.hpp>
 #include <jsonrpccxx/iclientconnector.hpp>
-#include <httplib/httplib.h>
+#include <httplib.h>
 
 namespace msrm_utils{
 

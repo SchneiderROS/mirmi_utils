@@ -5,7 +5,7 @@ sudo apt-get install -y libeigen3-dev fping
 # http lib
 git clone https://github.com/yhirose/cpp-httplib.git
 cd cpp-httplib
-git checkout v0.6.5
+git checkout v0.6.6
 mkdir build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..

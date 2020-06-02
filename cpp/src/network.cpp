@@ -279,11 +279,11 @@ bool JsonRPCServer::bind_method(const std::string &name, std::function<nlohmann:
 }
 
 JsonRPCClient::JsonRPCClient(const char* host, int port, double timeout) : m_rpc_client(*this,jsonrpccxx::version::v2),m_http_client(host, port),m_timeout(timeout) {
-    m_http_client.set_timeout_sec(timeout);
+    m_http_client.set_connection_timeout(timeout);
 }
 
 std::string JsonRPCClient::Send(const std::string &request){
-    m_http_client.set_timeout_sec(m_timeout);
+    m_http_client.set_connection_timeout(m_timeout);
     auto res = m_http_client.Post("/", request, "application/json");
     if (!res || res->status != 200) {
         throw jsonrpccxx::JsonRpcException(-32003, "client connector error, received status != 200");
