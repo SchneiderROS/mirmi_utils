@@ -115,7 +115,7 @@ template<typename T> bool read_json_param(const nlohmann::json& paramJ, const ch
         if(!paramJ.contains(key)){
             return false;
         }
-        if(paramJ.is_null()){
+        if(paramJ[key].is_null()){
             return false;
         }
         paramJ[key].get_to(param);
