@@ -7,6 +7,10 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
+find_program(CCACHE_PROGRAM ccache)
+if(CCACHE_PROGRAM)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+endif()
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 set(CMAKE_CXX_STANDARD 17)
@@ -32,6 +36,9 @@ add_executable(unit_tests src/unit_test.cpp unit_tests/test_conversion.cpp unit_
 target_link_libraries(unit_tests msrm_cpp_utils boost_system pthread crypto)
 
 set_target_properties(msrm_cpp_utils PROPERTIES PUBLIC_HEADER "${HEADER}")
+
+set_target_properties(msrm_cpp_utils PROPERTIES UNITY_BUILD ON)
+set_target_properties(unit_tests PROPERTIES UNITY_BUILD ON)
 
 target_precompile_headers(msrm_cpp_utils PRIVATE ${CMAKE_SOURCE_DIR}/include/commons/pch.hpp)
 target_precompile_headers(unit_tests PRIVATE ${CMAKE_SOURCE_DIR}/include/commons/pch.hpp)
