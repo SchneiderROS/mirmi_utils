@@ -76,4 +76,6 @@ template <typename T> int sgn(T val) {
     return (T(0) < val) - (val < T(0));
 }
 
+Eigen::Matrix<double,3,3> build_rotation_matrix(const Eigen::Matrix<double,3,1>& v1, const Eigen::Matrix<double,3,1>& v2);
+
 }

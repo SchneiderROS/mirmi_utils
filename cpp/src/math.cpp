@@ -105,4 +105,18 @@ double fRand(double fMin, double fMax)
     return fMin + f * (fMax - fMin);
 }
 
+Eigen::Matrix<double,3,3> build_rotation_matrix(const Eigen::Matrix<double,3,1>& v1, const Eigen::Matrix<double,3,1>& v2){
+    Eigen::Matrix<double,3,1> p=v1.cross(v2);
+    double s = p.norm();
+    double c = v1.dot(v2);
+
+    Eigen::Matrix<double,3,3> v_x;
+    v_x<<0,-p(2),p(1),p(2),0,-p(0),-p(1),p(0),0;
+    Eigen::Matrix<double,3,3> R = Eigen::Matrix<double,3,3>::Identity() + v_x + (v_x*v_x)*(1-c)/pow(s,2);
+    R.block<3,1>(0,0).normalize();
+    R.block<3,1>(0,1).normalize();
+    R.block<3,1>(0,2).normalize();
+    return R;
+}
+
 }
