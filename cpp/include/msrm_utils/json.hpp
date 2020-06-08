@@ -129,6 +129,26 @@ template<typename T> bool read_json_param(const nlohmann::json& paramJ, const ch
     return true;
 }
 
+template<typename T> std::optional<T> from_json(const nlohmann::json& paramJ, const char* key){
+    try{
+        if(!paramJ.contains(key)){
+            return {};
+        }
+        if(paramJ[key].is_null()){
+            return {};
+        }
+        T param;
+        paramJ[key].get_to(param);
+        return param;
+    }catch(const nlohmann::detail::parse_error& e){
+        std::cout<<e.what()<<std::endl;
+        return {};
+    }catch(const nlohmann::detail::exception& e){
+        std::cout<<e.what()<<std::endl;
+        return {};
+    }
+}
+
 /**
  * Converts the indicated json value into an Eigen::Matrix.
  * @param paramJ Json value to read from.
@@ -218,6 +238,24 @@ template<typename T> bool read_json_param(const nlohmann::json& paramJ, const ch
         return false;
     }
     return true;
+}
+
+template<typename T, size_t S1,size_t S2> nlohmann::json from_eigen(const Eigen::Matrix<T,S1,S2> eigen_object,bool column_major=true){
+    nlohmann::json json_array;
+    if(column_major){
+        for(unsigned i=0;i<S2;i++){
+            for(unsigned j=0;j<S1;j++){
+                json_array.emplace_back(eigen_object(j,i));
+            }
+        }
+    }else{
+        for(unsigned i=0;i<S1;i++){
+            for(unsigned j=0;j<S2;j++){
+                json_array.emplace_back(eigen_object(i,j));
+            }
+        }
+    }
+    return json_array;
 }
 
 /**
