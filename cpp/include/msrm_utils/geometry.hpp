@@ -27,5 +27,20 @@ private:
     double m_length;
 };
 
+class Plane{
+public:
+    Plane(Eigen::Matrix<double,3,1> p1, Eigen::Matrix<double,3,1> p2, Eigen::Matrix<double,3,1> p3);
+    Plane(Eigen::Matrix<double,3,1> v1, Eigen::Matrix<double,3,1> v2);
+
+    int get_side(Eigen::Matrix<double,3,1> p);
+    bool points_towards_plane(Eigen::Matrix<double,3,1> v);
+//    Eigen::Vector3d get_intersection(Eigen::Vector3d v);
+
+private:
+    Eigen::Matrix<double,3,1> m_base;
+    Eigen::Matrix<double,3,1> m_dir;
+    double a,b,c,d;
+};
+
 
 }
