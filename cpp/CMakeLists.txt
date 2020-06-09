@@ -32,7 +32,7 @@ set(HEADER include/msrm_utils/conversion.hpp include/msrm_utils/files.hpp includ
 add_library(msrm_cpp_utils STATIC ${SOURCES})
 target_include_directories(msrm_cpp_utils PUBLIC include)
 add_executable(unit_tests src/unit_test.cpp unit_tests/test_conversion.cpp unit_tests/test_network.cpp
-    unit_tests/test_files.cpp unit_tests/test_system.cpp unit_tests/test_math.cpp unit_tests/test_benchmarking.cpp unit_tests/test_geometry.cpp)
+    unit_tests/test_files.cpp unit_tests/test_system.cpp unit_tests/test_math.cpp unit_tests/test_benchmarking.cpp unit_tests/test_geometry.cpp unit_tests/test_json.cpp)
 target_link_libraries(unit_tests msrm_cpp_utils boost_system pthread crypto)
 
 set_target_properties(msrm_cpp_utils PROPERTIES PUBLIC_HEADER "${HEADER}")
