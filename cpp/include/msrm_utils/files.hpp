@@ -32,7 +32,7 @@ bool check_if_file_exists(const char* file);
  * \param[in] file The path to the target file including the filename.
  * \param[in] If true a new line is appended at the end of the current line.
  */
-template<typename T, std::size_t S> void write_data_to_file(const std::array<T, S>& data, const char* file, bool newline=false){
+template<typename T, std::size_t S> void write_data_to_file(const std::array<T, S>& data, const std::string& file, bool newline=false){
     std::ofstream s;
     s.open(file,std::ios::app);
 
