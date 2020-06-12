@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-sudo apt-get install -y libboost1.65-all-dev libeigen3-dev fping
+sudo apt-get install -y libeigen3-dev fping
 sudo apt-get install libssl-dev libsasl2-dev
 
 ROOT=$(dirname "$(realpath $0)")/third_party
