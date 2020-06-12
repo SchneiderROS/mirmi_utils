@@ -42,9 +42,6 @@ target_include_directories(msrm_cpp_utils PUBLIC include)
 set_target_properties(msrm_cpp_utils PROPERTIES PUBLIC_HEADER "${HEADER}")
 set_target_properties(msrm_cpp_utils PROPERTIES UNITY_BUILD ON)
 
-
-
-
 if(BUILD_TESTS)
   enable_testing()
   add_executable(unit_tests src/unit_test.cpp unit_tests/test_conversion.cpp unit_tests/test_network.cpp
@@ -62,5 +59,5 @@ if(USE_PCH)
   target_precompile_headers(msrm_cpp_utils PRIVATE ${CMAKE_SOURCE_DIR}/include/commons/pch.hpp)
 endif()
 
-install(TARGETS msrm_cpp_utils CONFIGURATIONS Release DESTINATION ${CMAKE_INSTALL_LIBDIR} PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/msrm_utils)
-install(TARGETS msrm_cpp_utils CONFIGURATIONS Debug DESTINATION ${CMAKE_INSTALL_LIBDIR} PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/msrm_utils)
+install(TARGETS msrm_cpp_utils CONFIGURATIONS Release DESTINATION ${CMAKE_INSTALL_PREFIX}/lib PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/msrm_utils)
+install(TARGETS msrm_cpp_utils CONFIGURATIONS Debug DESTINATION ${CMAKE_INSTALL_PREFIX}/lib PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/msrm_utils)
