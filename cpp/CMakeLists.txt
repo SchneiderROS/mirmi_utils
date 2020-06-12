@@ -19,8 +19,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wreturn-type")
 set(CMAKE_DEBUG_POSTFIX _dbg)
 set(CMAKE_EXPORT_COMPILE_COMMANDS On)
 
+SET(USER_INCLUDE_PATH "" CACHE STRING "Additional header location.")
+
 find_program(FPING fping)
-message(${FPING})
 if(NOT FPING)
     message(FATAL_ERROR "fping not found!")
 endif()
@@ -30,6 +31,10 @@ set(HEADER include/msrm_utils/conversion.hpp include/msrm_utils/files.hpp includ
     include/msrm_utils/network.hpp include/msrm_utils/output.hpp include/msrm_utils/system.hpp include/msrm_utils/benchmarking.hpp include/msrm_utils/geometry.hpp)
 
 add_library(msrm_cpp_utils STATIC ${SOURCES})
+
+if(USER_INCLUDE_PATH)
+target_include_directories(msrm_cpp_utils PUBLIC ${USER_INCLUDE_PATH})
+endif()
 target_include_directories(msrm_cpp_utils PUBLIC include)
 add_executable(unit_tests src/unit_test.cpp unit_tests/test_conversion.cpp unit_tests/test_network.cpp
     unit_tests/test_files.cpp unit_tests/test_system.cpp unit_tests/test_math.cpp unit_tests/test_benchmarking.cpp unit_tests/test_geometry.cpp)
