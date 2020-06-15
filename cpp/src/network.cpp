@@ -935,6 +935,10 @@ bool UDPStreamReceiver::disconnect(){
     return true;
 }
 
+bool UDPStreamReceiver::is_running(){
+    return m_keep_listening;
+}
+
 void UDPStreamReceiver::listen(){
     char buf[m_buffer_size];
 

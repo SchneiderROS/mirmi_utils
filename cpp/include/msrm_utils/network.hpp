@@ -459,6 +459,12 @@ public:
      * @return True if connection was successful, false otherwise
      */
     bool disconnect();
+
+    /**
+     * @brief is_running Indicates whether the receiver is still running.
+     * @return True if the listening thread is still running, false otherwise
+     */
+    bool is_running();
 private:
     void listen();
 
