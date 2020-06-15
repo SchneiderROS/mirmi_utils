@@ -28,4 +28,6 @@ bool process_is_running(const std::string& process);
 
 std::vector<int> get_video_device_id(const std::string& device_name);
 
+std::string generate_uuid();
+
 }
