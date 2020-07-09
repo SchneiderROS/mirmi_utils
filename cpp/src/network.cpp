@@ -285,6 +285,10 @@ JsonRPCClient::JsonRPCClient(const char* host, int port, double timeout) : m_rpc
     m_http_client.set_connection_timeout(timeout);
 }
 
+JsonRPCClient::~JsonRPCClient(){
+    m_http_client.stop();
+}
+
 std::string JsonRPCClient::Send(const std::string &request){
     m_http_client.set_connection_timeout(m_timeout);
     auto res = m_http_client.Post("/", request, "application/json");

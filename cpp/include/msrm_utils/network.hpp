@@ -170,6 +170,7 @@ public:
      * @param timeout Time without answer from server after which the client aborts the call.
      */
     JsonRPCClient(const char* host, int port, double timeout);
+    ~JsonRPCClient();
 
     /**
      * @brief send Sends a json message to the server.
