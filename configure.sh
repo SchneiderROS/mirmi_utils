@@ -28,7 +28,7 @@ then
 git clone https://github.com/yhirose/cpp-httplib.git
 fi
 cd cpp-httplib
-git checkout v0.6.6
+git checkout v0.6.7
 mkdir -p build
 cd build
 cmake -DHTTPLIB_COMPILE=ON -DCMAKE_INSTALL_PREFIX=${ROOT} ..
