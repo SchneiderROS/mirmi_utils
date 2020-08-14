@@ -19,12 +19,12 @@
 #include <functional>
 #include <initializer_list>
 
-#include <simple-websocket-server/server_ws.hpp>
-#include <simple-websocket-server/client_ws.hpp>
-#include <jsonrpccxx/client.hpp>
-#include <jsonrpccxx/server.hpp>
-#include <jsonrpccxx/iclientconnector.hpp>
-#include <httplib.h>
+#include "simple-websocket-server/server_ws.hpp"
+#include "simple-websocket-server/client_ws.hpp"
+#include "jsonrpccxx/client.hpp"
+#include "jsonrpccxx/server.hpp"
+#include "jsonrpccxx/iclientconnector.hpp"
+#include "httplib.h"
 
 namespace msrm_utils{
 

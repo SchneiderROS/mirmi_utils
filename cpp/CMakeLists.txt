@@ -30,25 +30,25 @@ endif()
 SET(USER_INCLUDE_PATH "" CACHE STRING "Additional header location.")
 option(BUILD_TESTS "Build tests" ON)
 option(USE_PCH "Use precompiled headers" OFF)
+option(STATIC_LIB "Compile a static library" ON)
 
 set(SOURCES src/conversion.cpp src/files.cpp src/json.cpp src/math.cpp src/network.cpp src/output.cpp src/system.cpp src/benchmarking.cpp src/geometry.cpp)
 set(HEADER include/msrm_utils/conversion.hpp include/msrm_utils/files.hpp include/msrm_utils/json.hpp include/msrm_utils/math.hpp
     include/msrm_utils/network.hpp include/msrm_utils/output.hpp include/msrm_utils/system.hpp include/msrm_utils/benchmarking.hpp include/msrm_utils/geometry.hpp)
 
-add_library(msrm_cpp_utils STATIC ${SOURCES})
+if(STATIC_LIB)
+    add_library(msrm_cpp_utils STATIC ${SOURCES})
+else()
+    add_library(msrm_cpp_utils SHARED ${SOURCES})
+endif()
 
 if(USER_INCLUDE_PATH)
 target_include_directories(msrm_cpp_utils PUBLIC ${USER_INCLUDE_PATH})
 endif()
+
 target_include_directories(msrm_cpp_utils PUBLIC include ${CMAKE_SOURCE_DIR}/../third_party/include)
 link_directories(msrm_cpp_utils ${CMAKE_SOURCE_DIR}/../third_party/lib)
-target_link_libraries(msrm_cpp_utils httplib ssl z)
-
-get_cmake_property(_variableNames VARIABLES)
-list (SORT _variableNames)
-foreach (_variableName ${_variableNames})
-    message(STATUS "${_variableName}=${${_variableName}}")
-endforeach()
+target_link_libraries(msrm_cpp_utils ssl z)
 
 set_target_properties(msrm_cpp_utils PROPERTIES PUBLIC_HEADER "${HEADER}")
 set_target_properties(msrm_cpp_utils PROPERTIES UNITY_BUILD ON)
@@ -63,8 +63,6 @@ if(BUILD_TESTS)
     target_precompile_headers(unit_tests PRIVATE ${CMAKE_SOURCE_DIR}/include/commons/pch.hpp)
   endif()
 endif()
-
-
 
 if(USE_PCH)
   target_precompile_headers(msrm_cpp_utils PRIVATE ${CMAKE_SOURCE_DIR}/include/commons/pch.hpp)

@@ -31,7 +31,7 @@ cd cpp-httplib
 git checkout v0.6.7
 mkdir -p build
 cd build
-cmake -DHTTPLIB_COMPILE=ON -DCMAKE_INSTALL_PREFIX=${ROOT} ..
+cmake -DHTTPLIB_COMPILE=OFF -DCMAKE_INSTALL_PREFIX=${ROOT} ..
 make -j$(nproc --all)
 make install
 
