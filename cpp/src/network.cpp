@@ -889,8 +889,8 @@ bool UDPStreamSender::send(const std::vector<double> payload){
     return true;
 }
 
-UDPStreamReceiver::UDPStreamReceiver(unsigned port, unsigned buffer_size, unsigned timeout_s, unsigned timeout_us,unsigned max_lost_packets,std::function<void(std::vector<double>&)> payload_callback):
-    m_port(port),m_buffer_size(buffer_size),m_header_size(10),m_packet_cnt(0),m_timeout_s(timeout_s),m_timeout_us(timeout_us),m_max_lost_packets(max_lost_packets),m_payload_callback(payload_callback){
+UDPStreamReceiver::UDPStreamReceiver(unsigned port, unsigned buffer_size, unsigned timeout_s, unsigned timeout_us,unsigned max_lost_packets,std::function<void(std::vector<double>&)> payload_callback,bool multicast):
+    m_port(port),m_buffer_size(buffer_size),m_header_size(10),m_packet_cnt(0),m_timeout_s(timeout_s),m_timeout_us(timeout_us),m_max_lost_packets(max_lost_packets),m_payload_callback(payload_callback),m_multicast(multicast){
 
 }
 
@@ -918,10 +918,21 @@ bool UDPStreamReceiver::connect(){
     m_si_me.sin_family = AF_INET;
     m_si_me.sin_port = htons(m_port);
     m_si_me.sin_addr.s_addr=htonl (INADDR_ANY);
-    if(bind(m_socket , (struct sockaddr*)&m_si_me, sizeof(m_si_me))==-1){
+    if(bind(m_socket, (struct sockaddr*)&m_si_me, sizeof(m_si_me))==-1){
         std::cout<<"Could not bind socket: "<<std::strerror(errno)<<std::endl;
         return false;
     }
+    if(m_multicast){
+        struct ip_mreq mreq;
+
+        mreq.imr_multiaddr.s_addr = inet_addr("225.0.0.1");
+        mreq.imr_interface.s_addr = htonl(INADDR_ANY);
+        int err=setsockopt(m_socket,IPPROTO_IP,IP_ADD_MEMBERSHIP,&mreq,sizeof(mreq));
+        if(err<0){
+            std::cout<<"Could not set socket options for multicast."<<std::endl;
+        }
+    }
+
     m_keep_listening=true;
     m_listen_thread = std::thread(&UDPStreamReceiver::listen,this);
     return true;

@@ -445,7 +445,7 @@ public:
      * @param max_lost_packets Maximum allowed number of packet before connection is closed
      * @param payload_callback Callback to function that accepts the payload for unpacking.
      */
-    UDPStreamReceiver(unsigned port, unsigned buffer_size, unsigned timeout_s, unsigned timeout_us,unsigned max_lost_packets,std::function<void(std::vector<double>&)> payload_callback);
+    UDPStreamReceiver(unsigned port, unsigned buffer_size, unsigned timeout_s, unsigned timeout_us,unsigned max_lost_packets,std::function<void(std::vector<double>&)> payload_callback,bool multicast=false);
     /**
      * @brief ~UDPStreamReceiver The destructor automatically calls disconnect
      */
@@ -489,6 +489,8 @@ private:
     std::atomic<bool> m_flag_valid_message;
 
     std::function<void(std::vector<double>&)> m_payload_callback;
+
+    bool m_multicast;
 };
 
 }
