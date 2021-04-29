@@ -1,7 +1,60 @@
+# Copyright (c) 2020 - present, Lars Johannsmeier
+# All rights reserved.
+# contact: lars.johannsmeier@tum.de
+
 cmake_minimum_required(VERSION 3.16.0)
 project(msrm_utils
     LANGUAGES CXX
     )
+
+
+
+option (FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." TRUE)
+if (${FORCE_COLORED_OUTPUT})
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+       add_compile_options (-fdiagnostics-color=always)
+    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+       add_compile_options (-fcolor-diagnostics)
+    endif ()
+endif ()
+
+# ---------------------------------------------------------------------------------------
+# Set MSRM_UTILS_MAIN_PROJECT to ON if we are building robotp2p
+# ---------------------------------------------------------------------------------------
+# Check if msrm_utils is being used directly or via add_subdirectory, but allow overriding
+if(NOT DEFINED MSRM_UTILS_MAIN_PROJECT)
+    if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+        set(MSRM_UTILS_MAIN_PROJECT ON)
+    else()
+        set(MSRM_UTILS_MAIN_PROJECT OFF)
+    endif()
+endif()
+
+option(MSRM_UTILS_INSTALL "Generate the install target" ${MSRM_UTILS_MAIN_PROJECT})
+
+# set the verbosity level for logging/printing
+add_definitions(-Dverbose_level=1)
+
+# Set global flags only if this is the main project
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    set(CMAKE_CXX_FLAGS_DEBUG "-g")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+    set(CMAKE_CXX_STANDARD 17)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+    set(CMAKE_DEBUG_POSTFIX _dbg)
+    set(CMAKE_EXPORT_COMPILE_COMMANDS On)
+    set(CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/../third_party/lib/cmake)
+
+    set(CMAKE_CXX_EXTENSIONS OFF)
+    set(CMAKE_VERBOSE_MAKEFILE ON)
+
+    add_compile_options(-std=c++17)
+    add_compile_options(-Wall -Wextra -Wpedantic -Werror)
+    if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        add_compile_options(-Wthread-safety)
+    endif()
+endif()
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
@@ -11,14 +64,7 @@ find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM)
     set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
 endif()
-set(CMAKE_CXX_FLAGS_DEBUG "-g")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wreturn-type")
-set(CMAKE_DEBUG_POSTFIX _dbg)
-set(CMAKE_EXPORT_COMPILE_COMMANDS On)
-set(CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/../third_party/lib/cmake)
+
 
 find_package(nlohmann_json REQUIRED)
 
@@ -70,3 +116,49 @@ endif()
 
 install(TARGETS msrm_cpp_utils CONFIGURATIONS Release DESTINATION ${CMAKE_INSTALL_PREFIX}/lib PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/msrm_utils)
 install(TARGETS msrm_cpp_utils CONFIGURATIONS Debug DESTINATION ${CMAKE_INSTALL_PREFIX}/lib PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/msrm_utils)
+
+if(MSRM_UTILS_INSTALL)
+    message(STATUS "Generating install")
+    set(project_config_in "${CMAKE_CURRENT_LIST_DIR}/cmake/msrm_cpp_utilsConfig.cmake.in")
+    set(project_config_out "${CMAKE_CURRENT_BINARY_DIR}/msrm_cpp_utilsConfig.cmake")
+    set(config_targets_file "msrm_cpp_utilsConfigTargets.cmake")
+    set(version_config_file "${CMAKE_CURRENT_BINARY_DIR}/msrm_cpp_utilsConfigVersion.cmake")
+    set(export_dest_dir "${CMAKE_INSTALL_LIBDIR}/cmake/msrm_cpp_utils")
+    set(pkgconfig_install_dir "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+    set(pkg_config "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc")
+    message(STATUS "pkg_config=${pkg_config}")
+
+    # ---------------------------------------------------------------------------------------
+    # Install targets
+    # ---------------------------------------------------------------------------------------
+    install(TARGETS msrm_cpp_utils
+            EXPORT msrm_cpp_utils-targets
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/msrm_cpp_utils
+    )
+
+    # ---------------------------------------------------------------------------------------
+    # Install pkg-config file
+    # ---------------------------------------------------------------------------------------
+    configure_file("cmake/${PROJECT_NAME}.pc.in" "${pkg_config}" @ONLY)
+    install(FILES "${pkg_config}" DESTINATION "${pkgconfig_install_dir}")
+
+    # ---------------------------------------------------------------------------------------
+    # Install CMake config files
+    # ---------------------------------------------------------------------------------------
+    install(EXPORT msrm_cpp_utils-targets
+            FILE ${config_targets_file}
+            DESTINATION ${export_dest_dir}
+            NAMESPACE msrm_cpp_utils::)
+
+    include(CMakePackageConfigHelpers)
+    configure_file("${project_config_in}" "${project_config_out}" @ONLY)
+
+    write_basic_package_version_file("${version_config_file}" COMPATIBILITY SameMajorVersion)
+    install(FILES "${project_config_out}" "${version_config_file}" DESTINATION "${export_dest_dir}")
+
+    # ---------------------------------------------------------------------------------------
+    # Support creation of installable packages
+    # ---------------------------------------------------------------------------------------
+    include(cmake/msrm_cpp_utilsCPack.cmake)
+endif()
