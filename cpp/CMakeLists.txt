@@ -1,4 +1,12 @@
 cmake_minimum_required(VERSION 3.16.0)
+
+include(cmake/utils.cmake)
+get_msrm_utils_version()
+
+project(msrm_utils VERSION ${MSRM_UTILS_VERSION}
+                 DESCRIPTION "multi-purpose function library"
+                 LANGUAGES CXX)
+
 project(msrm_utils
     LANGUAGES CXX
     )
@@ -15,7 +23,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wreturn-type")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wreturn-type -Wno-error=deprecated-declarations")
 set(CMAKE_DEBUG_POSTFIX _dbg)
 set(CMAKE_EXPORT_COMPILE_COMMANDS On)
 set(CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/../third_party/lib/cmake)
