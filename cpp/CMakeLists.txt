@@ -7,15 +7,9 @@ cmake_minimum_required(VERSION 3.16.0)
 include(cmake/utils.cmake)
 get_msrm_utils_version()
 
-project(msrm_utils VERSION ${MSRM_UTILS_VERSION}
+project(msrm_cpp_utils VERSION ${MSRM_UTILS_VERSION}
                  DESCRIPTION "multi-purpose function library"
                  LANGUAGES CXX)
-
-project(msrm_utils
-    LANGUAGES CXX
-    )
-
-
 
 option (FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." TRUE)
 if (${FORCE_COLORED_OUTPUT})
@@ -25,6 +19,15 @@ if (${FORCE_COLORED_OUTPUT})
        add_compile_options (-fcolor-diagnostics)
     endif ()
 endif ()
+
+include(FetchContent)
+set(FETCHCONTENT_QUIET OFF)
+get_filename_component(extern "../extern"
+                       REALPATH BASE_DIR "${CMAKE_BINARY_DIR}")
+set(FETCHCONTENT_BASE_DIR ${CMAKE_SOURCE_DIR}/extern)
+message(${FETCHCONTENT_BASE_DIR})
+
+include(cmake/extern.txt)
 
 # ---------------------------------------------------------------------------------------
 # Set MSRM_UTILS_MAIN_PROJECT to ON if we are building robotp2p
@@ -52,7 +55,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
     set(CMAKE_DEBUG_POSTFIX _dbg)
     set(CMAKE_EXPORT_COMPILE_COMMANDS On)
-    set(CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/../third_party/lib/cmake)
+    set(CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/../extern/lib/cmake)
 
     set(CMAKE_CXX_EXTENSIONS OFF)
     set(CMAKE_VERBOSE_MAKEFILE ON)
@@ -73,17 +76,15 @@ if(CCACHE_PROGRAM)
     set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
 endif()
 
-find_package(nlohmann_json REQUIRED)
-
 find_program(FPING fping)
 if(NOT FPING)
     message(FATAL_ERROR "fping not found!")
 endif()
 
-SET(USER_INCLUDE_PATH "" CACHE STRING "Additional header location.")
-option(BUILD_TESTS "Build tests" ON)
+option(BUILD_TESTING "Build tests" OFF)
 option(USE_PCH "Use precompiled headers" OFF)
 option(STATIC_LIB "Compile a static library" ON)
+enable_testing()
 
 set(SOURCES src/conversion.cpp src/files.cpp src/json.cpp src/math.cpp src/network.cpp src/output.cpp src/system.cpp src/benchmarking.cpp src/geometry.cpp)
 set(HEADER include/msrm_utils/conversion.hpp include/msrm_utils/files.hpp include/msrm_utils/json.hpp include/msrm_utils/math.hpp
@@ -95,34 +96,37 @@ else()
     add_library(msrm_cpp_utils SHARED ${SOURCES})
 endif()
 
-if(USER_INCLUDE_PATH)
-target_include_directories(msrm_cpp_utils PUBLIC ${USER_INCLUDE_PATH})
-endif()
+target_include_directories(msrm_cpp_utils PUBLIC
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../include>"
+    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+)
 
-target_include_directories(msrm_cpp_utils PUBLIC include ${CMAKE_SOURCE_DIR}/../third_party/include)
-link_directories(msrm_cpp_utils ${CMAKE_SOURCE_DIR}/../third_party/lib)
-target_link_libraries(msrm_cpp_utils ssl z)
+target_link_libraries(msrm_cpp_utils PRIVATE
+    ${CMAKE_THREAD_LIBS_INIT}
+
+    # NOTE on why the build interface: https://gitlab.kitware.com/cmake/cmake/-/issues/15415#note_333595
+    # we only need the dependencies during the build, not in API
+    "$<BUILD_INTERFACE:simple-websocket-server>"
+    # NOTE we must use spdlog_header_only to integrate it into the static lib
+    "$<BUILD_INTERFACE:nlohmann_json::nlohmann_json>"
+    "ssl"
+    "z"
+)
 
 set_target_properties(msrm_cpp_utils PROPERTIES PUBLIC_HEADER "${HEADER}")
 set_target_properties(msrm_cpp_utils PROPERTIES UNITY_BUILD ON)
 
-if(BUILD_TESTS)
-  enable_testing()
-  add_executable(unit_tests src/unit_test.cpp unit_tests/test_conversion.cpp unit_tests/test_network.cpp
-      unit_tests/test_files.cpp unit_tests/test_system.cpp unit_tests/test_math.cpp unit_tests/test_benchmarking.cpp unit_tests/test_geometry.cpp)
-  target_link_libraries(unit_tests msrm_cpp_utils boost_system pthread crypto)
-  set_target_properties(unit_tests PROPERTIES UNITY_BUILD ON)
-  if(USE_PCH)
-    target_precompile_headers(unit_tests PRIVATE ${CMAKE_SOURCE_DIR}/include/commons/pch.hpp)
-  endif()
+# Testing only available if this is the main app AND BUILD_TESTING flag set
+if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR ROBOTP2P_BUILD_TESTING) AND BUILD_TESTING)
+    add_subdirectory(tests)
 endif()
 
 if(USE_PCH)
   target_precompile_headers(msrm_cpp_utils PRIVATE ${CMAKE_SOURCE_DIR}/include/commons/pch.hpp)
 endif()
 
-install(TARGETS msrm_cpp_utils CONFIGURATIONS Release DESTINATION ${CMAKE_INSTALL_PREFIX}/lib PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/msrm_utils)
-install(TARGETS msrm_cpp_utils CONFIGURATIONS Debug DESTINATION ${CMAKE_INSTALL_PREFIX}/lib PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/msrm_utils)
+#install(TARGETS msrm_cpp_utils CONFIGURATIONS Release DESTINATION ${CMAKE_INSTALL_PREFIX}/lib PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/msrm_utils)
+#install(TARGETS msrm_cpp_utils CONFIGURATIONS Debug DESTINATION ${CMAKE_INSTALL_PREFIX}/lib PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/include/msrm_utils)
 
 if(MSRM_UTILS_INSTALL)
     message(STATUS "Generating install")

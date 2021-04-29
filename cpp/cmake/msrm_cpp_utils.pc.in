@@ -1,0 +1,13 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+includedir=${prefix}/include
+libdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
+
+Name: lib@PROJECT_NAME@
+Description: Utility pack for C++
+URL: https://gitlab.lrz.de/ge29miq/@PROJECT_NAME@
+Version: @MSRM_CPP_UTILS_VERSION@
+CFlags: -I${includedir} @PKG_CONFIG_DEFINES@
+Libs: -L${libdir} -lmsrm_cpp_utils -pthread
+Requires: @PKG_CONFIG_REQUIRES@
+
