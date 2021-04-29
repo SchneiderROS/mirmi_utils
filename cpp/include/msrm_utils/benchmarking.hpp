@@ -1,3 +1,7 @@
+// Copyright (c) 2020 - present, Lars Johannsmeier
+// All rights reserved.
+// contact: lars.johannsmeier@gmail.com
+
 #pragma once
 
 #include <chrono>

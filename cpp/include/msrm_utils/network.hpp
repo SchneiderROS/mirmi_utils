@@ -1,3 +1,7 @@
+// Copyright (c) 2020 - present, Lars Johannsmeier
+// All rights reserved.
+// contact: lars.johannsmeier@gmail.com
+
 #pragma once
 
 #include <string>
@@ -128,6 +132,7 @@ public:
      * @param address The address to bind to.
      * @param port The port to bind to.
      */
+    [[deprecated("Will be removed in future releases. Please use the robotp2p repo instead (https://gitlab.lrz.de/ge46bax/robotp2p)")]]
     JsonRPCServer(const std::string &address, unsigned port);
     /**
      * @brief ~JsonRPCServer The destructor automatically calls stop_listening
@@ -169,6 +174,7 @@ public:
      * @param port Port of server.
      * @param timeout Time without answer from server after which the client aborts the call.
      */
+    [[deprecated("Will be removed in future releases. Please use the robotp2p repo instead (https://gitlab.lrz.de/ge46bax/robotp2p)")]]
     JsonRPCClient(const char* host, int port, double timeout);
     ~JsonRPCClient();
 
@@ -212,6 +218,7 @@ public:
      * @param port Port to bind to.
      * @param endpoint Server endpoint
      */
+    [[deprecated("Will be removed in future releases. Please use the robotp2p repo instead (https://gitlab.lrz.de/ge46bax/robotp2p)")]]
     JsonWebsocketServer(const std::string& address="localhost", unsigned port=9000, const std::string& endpoint="");
     /**
      * @brief ~JsonWebsocketServer The destructor automatically calls stop_listening
@@ -256,6 +263,7 @@ public:
      * @param port Port of server.
      * @param endpoint Server endpoint
      */
+    [[deprecated("Will be removed in future releases. Please use the robotp2p repo instead (https://gitlab.lrz.de/ge46bax/robotp2p)")]]
     JsonWebsocketClient(const std::string &address, unsigned port, const std::string &endpoint);
     /**
      * @brief send Sends a json message to the server.
@@ -297,6 +305,7 @@ public:
      * @brief JsonUDPServer Constructor
      * @param port The port to bind to.
      */
+    [[deprecated("Will be removed in future releases. Please use the robotp2p repo instead (https://gitlab.lrz.de/ge46bax/robotp2p)")]]
     JsonUDPServer(unsigned port);
     /**
      * @brief ~JsonUDPServer The destructor automatically calls stop_listening
@@ -351,6 +360,7 @@ public:
      * @param port Port of server.
      * @param timeout Time without answer from server after which the client aborts the call.
      */
+    [[deprecated("Will be removed in future releases. Please use the robotp2p repo instead (https://gitlab.lrz.de/ge46bax/robotp2p)")]]
     JsonUDPClient(const std::string &address, unsigned port, unsigned timeout);
     /**
      * @brief ~JsonUDPClient The destructor closes the socket.

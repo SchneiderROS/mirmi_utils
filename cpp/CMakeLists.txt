@@ -3,6 +3,14 @@
 # contact: lars.johannsmeier@tum.de
 
 cmake_minimum_required(VERSION 3.16.0)
+
+include(cmake/utils.cmake)
+get_msrm_utils_version()
+
+project(msrm_utils VERSION ${MSRM_UTILS_VERSION}
+                 DESCRIPTION "multi-purpose function library"
+                 LANGUAGES CXX)
+
 project(msrm_utils
     LANGUAGES CXX
     )
@@ -64,7 +72,6 @@ find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM)
     set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
 endif()
-
 
 find_package(nlohmann_json REQUIRED)
 
