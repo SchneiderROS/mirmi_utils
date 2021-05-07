@@ -2,19 +2,25 @@
 # All rights reserved.
 # contact: lars.johannsmeier@tum.de
 
-cmake_minimum_required(VERSION 3.16.0)
+cmake_minimum_required(VERSION 3.16...3.20)
+
+include(cmake/utils.cmake)
+get_msrm_utils_version()
 
 project(msrm_cpp_utils VERSION ${MSRM_UTILS_VERSION}
                  DESCRIPTION "multi-purpose function library"
                  LANGUAGES CXX)
 
-include(${CMAKE_SOURCE_DIR}/build/conanbuildinfo.cmake)
-conan_basic_setup()
+find_program(CCACHE_PROGRAM ccache)
+if(CCACHE_PROGRAM)
+    set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+    set(CMAKE_CUDA_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+endif()
 
-include(cmake/utils.cmake)
-get_msrm_utils_version()
-
-
+include(FetchContent)
+set(FETCHCONTENT_QUIET OFF)
+set(FETCHCONTENT_BASE_DIR ${CMAKE_SOURCE_DIR}/_deps)
+include(cmake/extern.cmake)
 
 option (FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." TRUE)
 if (${FORCE_COLORED_OUTPUT})
@@ -70,10 +76,12 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-find_program(CCACHE_PROGRAM ccache)
-if(CCACHE_PROGRAM)
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+if(CMAKE_BUILD_TYPE MATCHES Release)
+    include(${CMAKE_SOURCE_DIR}/build/release/conanbuildinfo.cmake)
+elseif(CMAKE_BUILD_TYPE MATCHES Debug)
+    include(${CMAKE_SOURCE_DIR}/build/debug/conanbuildinfo.cmake)
 endif()
+conan_basic_setup()
 
 find_program(FPING fping)
 if(NOT FPING)
@@ -85,21 +93,56 @@ option(USE_PCH "Use precompiled headers" OFF)
 option(STATIC_LIB "Compile a static library" ON)
 enable_testing()
 
-set(SOURCES src/conversion.cpp src/files.cpp src/json.cpp src/math.cpp src/network.cpp src/output.cpp src/system.cpp src/benchmarking.cpp src/geometry.cpp)
-set(HEADER include/msrm_utils/conversion.hpp include/msrm_utils/files.hpp include/msrm_utils/json.hpp include/msrm_utils/math.hpp
-    include/msrm_utils/network.hpp include/msrm_utils/output.hpp include/msrm_utils/system.hpp include/msrm_utils/benchmarking.hpp include/msrm_utils/geometry.hpp)
+set(msrm_cpp_utils_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
+
+set(msrm_cpp_utils_SRCS
+    src/conversion.cpp
+    src/files.cpp
+    src/json.cpp
+    src/math.cpp
+    src/network.cpp
+    src/output.cpp
+    src/system.cpp
+    src/benchmarking.cpp
+    src/geometry.cpp
+)
+
+set(msrm_cpp_utils_HEADER_FILES
+    ${msrm_cpp_utils_INCLUDE_DIR}/msrm_utils/conversion.hpp
+    ${msrm_cpp_utils_INCLUDE_DIR}/msrm_utils/files.hpp
+    ${msrm_cpp_utils_INCLUDE_DIR}/msrm_utils/json.hpp
+    ${msrm_cpp_utils_INCLUDE_DIR}/msrm_utils/math.hpp
+    ${msrm_cpp_utils_INCLUDE_DIR}/msrm_utils/network.hpp
+    ${msrm_cpp_utils_INCLUDE_DIR}/msrm_utils/output.hpp
+    ${msrm_cpp_utils_INCLUDE_DIR}/msrm_utils/system.hpp
+    ${msrm_cpp_utils_INCLUDE_DIR}/msrm_utils/benchmarking.hpp
+    ${msrm_cpp_utils_INCLUDE_DIR}/msrm_utils/geometry.hpp
+)
+
+set(msrm_cpp_utils_PRIVATE_HEADER_FILES
+    ${msrm_cpp_utils_INCLUDE_DIR}/catch/catch.hpp
+    ${msrm_cpp_utils_INCLUDE_DIR}/commons/pch.hpp
+    ${msrm_cpp_utils_INCLUDE_DIR}/commons/version.hpp
+)
 
 if(STATIC_LIB)
-    add_library(msrm_cpp_utils STATIC ${SOURCES})
+    add_library(msrm_cpp_utils STATIC ${msrm_cpp_utils_SRCS} ${msrm_cpp_utils_PRIVATE_HEADER_FILES})
 else()
-    add_library(msrm_cpp_utils SHARED ${SOURCES})
+    add_library(msrm_cpp_utils SHARED ${msrm_cpp_utils_SRCS} ${msrm_cpp_utils_PRIVATE_HEADER_FILES})
 endif()
 
-target_include_directories(msrm_cpp_utils PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(msrm_cpp_utils PRIVATE ssl z)
-
-
+set_target_properties(msrm_cpp_utils PROPERTIES PUBLIC_HEADER "${msrm_cpp_utils_HEADER_FILES}")
 set_target_properties(msrm_cpp_utils PROPERTIES UNITY_BUILD ON)
+
+target_include_directories(msrm_cpp_utils PUBLIC
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+)
+
+target_link_libraries(msrm_cpp_utils
+    PRIVATE ssl z
+    "<BUILD_INTERFACE:json-rpc-cxx>")
+
 
 # Testing only available if this is the main app AND BUILD_TESTING flag set
 if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME) AND BUILD_TESTING)

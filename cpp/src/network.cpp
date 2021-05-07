@@ -601,7 +601,7 @@ void JsonUDPServer::stop_listening(){
 
 void JsonUDPServer::listen(){
     char buf[m_buffer_size];
-    unsigned payload_size;
+    unsigned payload_size=4096;
     while(m_flag_keep_listening){
         memset(&buf[0], 0, sizeof(buf));
         int reclen=recvfrom(m_socket, buf, m_buffer_size, MSG_WAITALL, (struct sockaddr *) &m_si_other, &m_slen);
