@@ -22,30 +22,20 @@ set(FETCHCONTENT_QUIET OFF)
 set(FETCHCONTENT_BASE_DIR ${CMAKE_SOURCE_DIR}/_deps)
 include(cmake/extern.cmake)
 
-option (FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." TRUE)
-if (${FORCE_COLORED_OUTPUT})
-    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-       add_compile_options (-fdiagnostics-color=always)
-    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-       add_compile_options (-fcolor-diagnostics)
-    endif ()
-endif ()
-
 # ---------------------------------------------------------------------------------------
 # Set MSRM_UTILS_MAIN_PROJECT to ON if we are building robotp2p
 # ---------------------------------------------------------------------------------------
 # Check if msrm_utils is being used directly or via add_subdirectory, but allow overriding
-if(NOT DEFINED MSRM_UTILS_MAIN_PROJECT)
+if(NOT DEFINED MSRM_CPP_UTILS_MAIN_PROJECT)
     if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-        set(MSRM_UTILS_MAIN_PROJECT ON)
+        set(MSRM_CPP_UTILS_MAIN_PROJECT ON)
     else()
-        set(MSRM_UTILS_MAIN_PROJECT OFF)
+        set(MSRM_CPP_UTILS_MAIN_PROJECT OFF)
     endif()
 endif()
 
-#option(MSRM_UTILS_INSTALL "Generate the install target" ${MSRM_UTILS_MAIN_PROJECT})
-option(MSRM_UTILS_INSTALL "Generate the install target" OFF)
-
+option(MSRM_CPP_UTILS_INSTALL "Generate the install target" ${MSRM_CPP_UTILS_MAIN_PROJECT})
+#option(MSRM_UTILS_INSTALL "Generate the install target" OFF)
 # set the verbosity level for logging/printing
 add_definitions(-Dverbose_level=1)
 
@@ -89,7 +79,7 @@ if(NOT FPING)
 endif()
 
 option(BUILD_TESTING "Build tests" OFF)
-option(USE_PCH "Use precompiled headers" OFF)
+option(USE_PCH "Use precompiled headers" ON)
 option(STATIC_LIB "Compile a static library" ON)
 enable_testing()
 
@@ -140,8 +130,11 @@ target_include_directories(msrm_cpp_utils PUBLIC
 )
 
 target_link_libraries(msrm_cpp_utils
-    PRIVATE ssl z
-    "<BUILD_INTERFACE:json-rpc-cxx>")
+    PRIVATE
+    ssl
+    z
+    json-rpc-cxx
+)
 
 
 # Testing only available if this is the main app AND BUILD_TESTING flag set
@@ -158,3 +151,52 @@ check_ipo_supported(RESULT result)
 if(result)
     set_target_properties(msrm_cpp_utils PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
+
+#if(MSRM_CPP_UTILS_INSTALL)
+#    message(STATUS "Generating install")
+#    set(project_config_in "${CMAKE_CURRENT_LIST_DIR}/cmake/msrm_cpp_utilsConfig.cmake.in")
+#    set(project_config_out "${CMAKE_CURRENT_BINARY_DIR}/msrm_cpp_utilsConfig.cmake")
+#    set(config_targets_file "msrm_cpp_utilsConfigTargets.cmake")
+#    set(version_config_file "${CMAKE_CURRENT_BINARY_DIR}/msrm_cpp_utilsConfigVersion.cmake")
+#    set(export_dest_dir "${CMAKE_INSTALL_LIBDIR}/cmake/msrm_cpp_utils")
+#    set(pkgconfig_install_dir "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+#    set(pkg_config "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc")
+#    message(STATUS "pkg_config=${pkg_config}")
+
+#    # ---------------------------------------------------------------------------------------
+#    # Install targets
+#    # ---------------------------------------------------------------------------------------
+
+#    install(TARGETS msrm_cpp_utils json-rpc-cxx
+#            EXPORT msrm_cpp_utils-targets
+#            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#            PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/msrm_cpp_utils
+#    )
+
+
+
+#    # ---------------------------------------------------------------------------------------
+#    # Install pkg-config file
+#    # ---------------------------------------------------------------------------------------
+#    configure_file("cmake/${PROJECT_NAME}.pc.in" "${pkg_config}" @ONLY)
+#    install(FILES "${pkg_config}" DESTINATION "${pkgconfig_install_dir}")
+
+#    # ---------------------------------------------------------------------------------------
+#    # Install CMake config files
+#    # ---------------------------------------------------------------------------------------
+#    install(EXPORT msrm_cpp_utils-targets
+#            FILE ${config_targets_file}
+#            DESTINATION ${export_dest_dir}
+#            NAMESPACE msrm_cpp_utils::)
+
+#    include(CMakePackageConfigHelpers)
+#    configure_file("${project_config_in}" "${project_config_out}" @ONLY)
+
+#    write_basic_package_version_file("${version_config_file}" COMPATIBILITY SameMajorVersion)
+#    install(FILES "${project_config_out}" "${version_config_file}" DESTINATION "${export_dest_dir}")
+
+#    # ---------------------------------------------------------------------------------------
+#    # Support creation of installable packages
+#    # ---------------------------------------------------------------------------------------
+#    include(cmake/msrm_cpp_utilsCPack.cmake)
+#endif()

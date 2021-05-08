@@ -10,5 +10,6 @@ find_dependency(Threads REQUIRED)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_dependency(OpenSSL REQUIRED)
 find_dependency(eigen REQUIRED)
+find_dependency(json REQUIRED)
 
 include("${CMAKE_CURRENT_LIST_DIR}/${config_targets_file}")
