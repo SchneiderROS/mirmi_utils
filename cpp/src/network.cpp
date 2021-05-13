@@ -893,7 +893,7 @@ bool UDPStreamSender::send(const std::string &payload){
     const char* msg = payload.c_str();
 
     // The message is sent out to the peer robot.
-    int err=sendto(m_socket, msg, sizeof(msg) , 0 , (struct sockaddr *) &m_si_other, m_slen)<0;
+    int err=sendto(m_socket, msg, strlen(msg) , 0 , (struct sockaddr *) &m_si_other, m_slen)<0;
     if(err<0){ // If an error occured during sending...
         std::cout<<"Could not send message: "<<std::strerror(errno)<<std::endl;
         return false;
