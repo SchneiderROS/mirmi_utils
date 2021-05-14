@@ -5,6 +5,7 @@ nlohmann_json/3.9.1
 simple-websocket-server/2.0.2
 cpp-httplib/0.8.6
 catch2/2.13.6
+spdlog/1.8.5
 
 [generators]
 cmake
