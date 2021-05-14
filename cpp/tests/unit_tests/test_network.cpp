@@ -70,7 +70,8 @@ TEST_CASE("udp stream","[network]"){
     });
     REQUIRE(sender.connect());
     REQUIRE(receiver.connect());
-    REQUIRE(sender.send({1,2,3,4,5}));
+    std::vector<double> payload = {1,2,3,4,5};
+    REQUIRE(sender.send(payload));
     sleep(1);
     REQUIRE((data[0]==1 && data[1]==2 && data[2]==3 && data[3]==4 && data[4]==5));
 }

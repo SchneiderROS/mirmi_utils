@@ -430,7 +430,14 @@ public:
      * @param payload A payload of doubles
      * @return True if successful, false otherwise
      */
-    bool send(const std::vector<double> payload);
+    bool send(const std::vector<double>& payload);
+
+    /**
+     * @brief send Send a single message to the server
+     * @param payload A payload consisting of a string
+     * @return True if successful, false otherwise
+     */
+    bool send(const std::string& payload);
 private:
     std::string m_address;
     unsigned m_port;

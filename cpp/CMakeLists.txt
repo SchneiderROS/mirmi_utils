@@ -11,6 +11,11 @@ project(msrm_cpp_utils VERSION ${MSRM_UTILS_VERSION}
     DESCRIPTION "multi-purpose function library"
     LANGUAGES CXX)
 
+find_program(FPING fping)
+if(NOT FPING)
+    message(FATAL_ERROR "fping not found!")
+endif()
+
 find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM)
     set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
@@ -35,7 +40,6 @@ if(NOT DEFINED MSRM_CPP_UTILS_MAIN_PROJECT)
 endif()
 
 option(MSRM_CPP_UTILS_INSTALL "Generate the install target" ${MSRM_CPP_UTILS_MAIN_PROJECT})
-#option(MSRM_UTILS_INSTALL "Generate the install target" OFF)
 # set the verbosity level for logging/printing
 add_definitions(-Dverbose_level=1)
 
@@ -72,11 +76,6 @@ elseif(CMAKE_BUILD_TYPE MATCHES Debug)
     include(${CMAKE_SOURCE_DIR}/build/debug/conanbuildinfo.cmake)
 endif()
 conan_basic_setup()
-
-find_program(FPING fping)
-if(NOT FPING)
-    message(FATAL_ERROR "fping not found!")
-endif()
 
 option(BUILD_TESTING "Build tests" OFF)
 option(USE_PCH "Use precompiled headers" ON)
