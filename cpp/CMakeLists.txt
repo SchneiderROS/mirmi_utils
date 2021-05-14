@@ -8,8 +8,8 @@ include(cmake/utils.cmake)
 get_msrm_utils_version()
 
 project(msrm_cpp_utils VERSION ${MSRM_UTILS_VERSION}
-                 DESCRIPTION "multi-purpose function library"
-                 LANGUAGES CXX)
+    DESCRIPTION "multi-purpose function library"
+    LANGUAGES CXX)
 
 find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM)
@@ -63,7 +63,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 endif()
 
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release)
+    set(CMAKE_BUILD_TYPE Release)
 endif()
 
 if(CMAKE_BUILD_TYPE MATCHES Release)
@@ -95,7 +95,7 @@ set(msrm_cpp_utils_SRCS
     src/system.cpp
     src/benchmarking.cpp
     src/geometry.cpp
-)
+    )
 
 set(msrm_cpp_utils_HEADER_FILES
     ${msrm_cpp_utils_INCLUDE_DIR}/msrm_utils/conversion.hpp
@@ -107,19 +107,20 @@ set(msrm_cpp_utils_HEADER_FILES
     ${msrm_cpp_utils_INCLUDE_DIR}/msrm_utils/system.hpp
     ${msrm_cpp_utils_INCLUDE_DIR}/msrm_utils/benchmarking.hpp
     ${msrm_cpp_utils_INCLUDE_DIR}/msrm_utils/geometry.hpp
-)
+    )
 
 set(msrm_cpp_utils_PRIVATE_HEADER_FILES
     ${msrm_cpp_utils_INCLUDE_DIR}/catch/catch.hpp
     ${msrm_cpp_utils_INCLUDE_DIR}/commons/pch.hpp
     ${msrm_cpp_utils_INCLUDE_DIR}/commons/version.hpp
-)
+    )
 
 if(STATIC_LIB)
     add_library(msrm_cpp_utils STATIC ${msrm_cpp_utils_SRCS} ${msrm_cpp_utils_PRIVATE_HEADER_FILES})
 else()
     add_library(msrm_cpp_utils SHARED ${msrm_cpp_utils_SRCS} ${msrm_cpp_utils_PRIVATE_HEADER_FILES})
 endif()
+add_library(msrm_cpp_utils::msrm_cpp_utils ALIAS msrm_cpp_utils)
 
 set_target_properties(msrm_cpp_utils PROPERTIES PUBLIC_HEADER "${msrm_cpp_utils_HEADER_FILES}")
 set_target_properties(msrm_cpp_utils PROPERTIES UNITY_BUILD ON)
@@ -127,14 +128,15 @@ set_target_properties(msrm_cpp_utils PROPERTIES UNITY_BUILD ON)
 target_include_directories(msrm_cpp_utils PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
-)
+    )
 
 target_link_libraries(msrm_cpp_utils
     PRIVATE
     ssl
     z
-    json-rpc-cxx
-)
+    $<BUILD_INTERFACE:json-rpc-cxx>
+    )
+
 
 
 # Testing only available if this is the main app AND BUILD_TESTING flag set
@@ -143,7 +145,7 @@ if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME) AND BUILD_TESTING)
 endif()
 
 if(USE_PCH)
-  target_precompile_headers(msrm_cpp_utils PRIVATE ${CMAKE_SOURCE_DIR}/include/commons/pch.hpp)
+    target_precompile_headers(msrm_cpp_utils PRIVATE ${CMAKE_SOURCE_DIR}/include/commons/pch.hpp)
 endif()
 
 include(CheckIPOSupported)
@@ -152,51 +154,51 @@ if(result)
     set_target_properties(msrm_cpp_utils PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
 
-#if(MSRM_CPP_UTILS_INSTALL)
-#    message(STATUS "Generating install")
-#    set(project_config_in "${CMAKE_CURRENT_LIST_DIR}/cmake/msrm_cpp_utilsConfig.cmake.in")
-#    set(project_config_out "${CMAKE_CURRENT_BINARY_DIR}/msrm_cpp_utilsConfig.cmake")
-#    set(config_targets_file "msrm_cpp_utilsConfigTargets.cmake")
-#    set(version_config_file "${CMAKE_CURRENT_BINARY_DIR}/msrm_cpp_utilsConfigVersion.cmake")
-#    set(export_dest_dir "${CMAKE_INSTALL_LIBDIR}/cmake/msrm_cpp_utils")
-#    set(pkgconfig_install_dir "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
-#    set(pkg_config "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc")
-#    message(STATUS "pkg_config=${pkg_config}")
+if(MSRM_CPP_UTILS_INSTALL)
+    message(STATUS "Generating install")
+    set(project_config_in "${CMAKE_CURRENT_LIST_DIR}/cmake/msrm_cpp_utilsConfig.cmake.in")
+    set(project_config_out "${CMAKE_CURRENT_BINARY_DIR}/msrm_cpp_utilsConfig.cmake")
+    set(config_targets_file "msrm_cpp_utilsConfigTargets.cmake")
+    set(version_config_file "${CMAKE_CURRENT_BINARY_DIR}/msrm_cpp_utilsConfigVersion.cmake")
+    set(export_dest_dir "${CMAKE_INSTALL_LIBDIR}/cmake/msrm_cpp_utils")
+    set(pkgconfig_install_dir "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+    set(pkg_config "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc")
+    message(STATUS "pkg_config=${pkg_config}")
 
-#    # ---------------------------------------------------------------------------------------
-#    # Install targets
-#    # ---------------------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------------------
+    # Install targets
+    # ---------------------------------------------------------------------------------------
 
-#    install(TARGETS msrm_cpp_utils json-rpc-cxx
-#            EXPORT msrm_cpp_utils-targets
-#            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-#            PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/msrm_cpp_utils
-#    )
+    install(TARGETS msrm_cpp_utils
+            EXPORT msrm_cpp_utils-targets
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/msrm_cpp_utils
+    )
 
 
 
-#    # ---------------------------------------------------------------------------------------
-#    # Install pkg-config file
-#    # ---------------------------------------------------------------------------------------
-#    configure_file("cmake/${PROJECT_NAME}.pc.in" "${pkg_config}" @ONLY)
-#    install(FILES "${pkg_config}" DESTINATION "${pkgconfig_install_dir}")
+    # ---------------------------------------------------------------------------------------
+    # Install pkg-config file
+    # ---------------------------------------------------------------------------------------
+    configure_file("cmake/${PROJECT_NAME}.pc.in" "${pkg_config}" @ONLY)
+    install(FILES "${pkg_config}" DESTINATION "${pkgconfig_install_dir}")
 
-#    # ---------------------------------------------------------------------------------------
-#    # Install CMake config files
-#    # ---------------------------------------------------------------------------------------
-#    install(EXPORT msrm_cpp_utils-targets
-#            FILE ${config_targets_file}
-#            DESTINATION ${export_dest_dir}
-#            NAMESPACE msrm_cpp_utils::)
+    # ---------------------------------------------------------------------------------------
+    # Install CMake config files
+    # ---------------------------------------------------------------------------------------
+    install(EXPORT msrm_cpp_utils-targets
+            FILE ${config_targets_file}
+            DESTINATION ${export_dest_dir}
+            NAMESPACE msrm_cpp_utils::)
 
-#    include(CMakePackageConfigHelpers)
-#    configure_file("${project_config_in}" "${project_config_out}" @ONLY)
+    include(CMakePackageConfigHelpers)
+    configure_file("${project_config_in}" "${project_config_out}" @ONLY)
 
-#    write_basic_package_version_file("${version_config_file}" COMPATIBILITY SameMajorVersion)
-#    install(FILES "${project_config_out}" "${version_config_file}" DESTINATION "${export_dest_dir}")
+    write_basic_package_version_file("${version_config_file}" COMPATIBILITY SameMajorVersion)
+    install(FILES "${project_config_out}" "${version_config_file}" DESTINATION "${export_dest_dir}")
 
-#    # ---------------------------------------------------------------------------------------
-#    # Support creation of installable packages
-#    # ---------------------------------------------------------------------------------------
-#    include(cmake/msrm_cpp_utilsCPack.cmake)
-#endif()
+    # ---------------------------------------------------------------------------------------
+    # Support creation of installable packages
+    # ---------------------------------------------------------------------------------------
+    include(cmake/msrm_cpp_utilsCPack.cmake)
+endif()
