@@ -1,5 +1,5 @@
 #include "msrm_utils/system.hpp"
-#include "catch/catch.hpp"
+#include "catch2/catch.hpp"
 #include <iostream>
 
 namespace msrm_utils {

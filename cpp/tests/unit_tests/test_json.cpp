@@ -1,5 +1,5 @@
 #include "msrm_utils/json.hpp"
-#include "catch/catch.hpp"
+#include "catch2/catch.hpp"
 
 namespace msrm_utils{
 

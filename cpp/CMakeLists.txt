@@ -109,7 +109,6 @@ set(msrm_cpp_utils_HEADER_FILES
     )
 
 set(msrm_cpp_utils_PRIVATE_HEADER_FILES
-    ${msrm_cpp_utils_INCLUDE_DIR}/catch/catch.hpp
     ${msrm_cpp_utils_INCLUDE_DIR}/commons/pch.hpp
     ${msrm_cpp_utils_INCLUDE_DIR}/commons/version.hpp
     )

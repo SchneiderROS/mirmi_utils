@@ -1,5 +1,5 @@
 #include "msrm_utils/conversion.hpp"
-#include "catch/catch.hpp"
+#include "catch2/catch.hpp"
 
 namespace msrm_utils {
 

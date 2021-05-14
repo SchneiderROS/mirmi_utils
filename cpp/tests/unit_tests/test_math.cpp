@@ -1,5 +1,5 @@
 #include "msrm_utils/math.hpp"
-#include "catch/catch.hpp"
+#include "catch2/catch.hpp"
 
 namespace msrm_utils {
 
@@ -13,6 +13,12 @@ TEST_CASE("get rotation matrix from vector","[math]"){
 
     v1<<0,2,0;
     std::cout<<build_rotation_matrix(v1,v2)<<std::endl;
+}
+
+TEST_CASE("sign","[math]"){
+    REQUIRE(sgn(1)==1);
+    REQUIRE(sgn(-1)==-1);
+    REQUIRE(sgn(0)==0);
 }
 
 }

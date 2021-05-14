@@ -1,5 +1,5 @@
 #include "msrm_utils/files.hpp"
-#include "catch/catch.hpp"
+#include "catch2/catch.hpp"
 
 namespace msrm_utils {
 
@@ -24,8 +24,8 @@ TEST_CASE("file input/output","[files]"){
     read_data_from_file("test_data1.txt",data4);
     read_data_from_file("test_data2.txt",data5);
     read_data_from_file("test_data3.txt",data6);
-    bool check_data4,check_data5,check_data6;
-    check_data4=check_data5=check_data6=true;
+    bool check_data4,check_data5;
+    check_data4=check_data5=true;
     for(unsigned i=0;i<data4.size();i++){
         if(i<10){
             if(data1[i]!=data4[i]){

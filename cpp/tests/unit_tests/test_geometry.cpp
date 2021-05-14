@@ -1,5 +1,5 @@
 #include "msrm_utils/geometry.hpp"
-#include "catch/catch.hpp"
+#include "catch2/catch.hpp"
 
 namespace msrm_utils {
 TEST_CASE("cylinder check","[geometry]"){

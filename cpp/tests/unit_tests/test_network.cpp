@@ -1,7 +1,8 @@
 #include "msrm_utils/network.hpp"
 #include "msrm_utils/benchmarking.hpp"
+#include "catch2/catch.hpp"
+
 #include <utility>
-#include "catch/catch.hpp"
 
 namespace msrm_utils {
 
@@ -26,8 +27,8 @@ TEST_CASE("ip address check","[network]"){
 }
 
 TEST_CASE("port check","[network]"){
-//    REQUIRE(!is_port_open("localhost",65536));
-//    REQUIRE(!is_port_open("localhost",0));
+    REQUIRE(!is_port_available("localhost",65536));
+    REQUIRE(!is_port_available("localhost",0));
 }
 
 TEST_CASE("own ip","[network]"){
