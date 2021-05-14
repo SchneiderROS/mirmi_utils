@@ -29,6 +29,7 @@
 #include "jsonrpccxx/server.hpp"
 #include "jsonrpccxx/iclientconnector.hpp"
 #include "httplib.h"
+#include "nlohmann/json.hpp"
 
 namespace msrm_utils{
 
@@ -305,7 +306,6 @@ public:
      * @brief JsonUDPServer Constructor
      * @param port The port to bind to.
      */
-    [[deprecated("Will be removed in future releases. Please use the robotp2p repo instead (https://gitlab.lrz.de/ge46bax/robotp2p)")]]
     JsonUDPServer(unsigned port);
     /**
      * @brief ~JsonUDPServer The destructor automatically calls stop_listening

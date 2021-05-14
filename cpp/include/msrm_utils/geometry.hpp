@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include <eigen3/Eigen/Core>
-#include <eigen3/Eigen/Geometry>
+#include "eigen3/Eigen/Core"
+#include "eigen3/Eigen/Geometry"
 
 namespace msrm_utils {
 

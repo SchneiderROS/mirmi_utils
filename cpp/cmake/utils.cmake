@@ -24,4 +24,3 @@ function(get_msrm_utils_version)
     set(MSRM_UTILS_VERSION_PATCH ${ver_patch} PARENT_SCOPE)
     set(MSRM_UTILS_VERSION "${ver_major}.${ver_minor}.${ver_patch}" PARENT_SCOPE)
 endfunction()
-

@@ -63,6 +63,8 @@ build/
 *.txt.user
 build-*
 CMakeLists.txt.user*
+_deps
+install
 
 
 # doxygen #
