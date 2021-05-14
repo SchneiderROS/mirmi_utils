@@ -10,6 +10,7 @@
 #include <cstring>
 #include "boost/exception/exception.hpp"
 #include "boost/system/system_error.hpp"
+#include "spdlog/spdlog.h"
 
 
 namespace msrm_utils{
@@ -48,7 +49,7 @@ bool is_valid_ip_address(const char *ipaddr){
 
 bool is_port_available(const char* host, unsigned port){
     if(port>65535){
-        std::cout<<"Port number must be between 0 and 65535"<<std::endl;
+        spdlog::error("Port number must be between 0 and 65535");
         return false;
     }
     int sockfd;
@@ -111,11 +112,7 @@ std::optional<std::string> get_own_ip(const char *iface){
             tmpAddrPtr=&((struct sockaddr_in6 *)ifa->ifa_addr)->sin6_addr;
             char addressBuffer[INET6_ADDRSTRLEN];
             inet_ntop(AF_INET6, tmpAddrPtr, addressBuffer, INET6_ADDRSTRLEN);
-            //            printf("%s IP Address %s\n", ifa->ifa_name, addressBuffer);
             interface=ifa->ifa_name;
-            //            if(interface==iface){
-            //                ip=std::string(addressBuffer);
-            //            }
         }
     }
     if (ifAddrStruct!=NULL) freeifaddrs(ifAddrStruct);
@@ -558,7 +555,7 @@ JsonUDPServer::~JsonUDPServer(){
 
 bool JsonUDPServer::start_listening(){
     if(!is_port_available("localhost",m_port)){
-        std::cout<<"Port "+std::to_string(m_port)+" is unavailable."<<std::endl;
+        spdlog::info("Port "+std::to_string(m_port)+" is unavailable.");
         return false;
     }
     m_buffer_size=4096;

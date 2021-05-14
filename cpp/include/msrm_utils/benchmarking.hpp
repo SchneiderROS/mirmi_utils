@@ -8,6 +8,8 @@
 #include <string>
 #include <iostream>
 
+#include "spdlog/spdlog.h"
+
 namespace msrm_utils {
 
 /*! Scoped timer for quick benchmarking */
@@ -33,7 +35,7 @@ public:
     double stop(){
         auto t1 = std::chrono::high_resolution_clock::now();
         double duration = std::chrono::duration_cast<d>(t1-m_t0).count();
-        std::cout<<"Scoped timer "<<m_id<<" meassured a duration of "<<duration<<".\n";
+        spdlog::info("Scoped timer " + m_id + " meassured a duration of " + std::to_string(duration) + ".");
         return duration;
     }
 private:

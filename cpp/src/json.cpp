@@ -8,7 +8,7 @@ bool find_json_value(const nlohmann::json& json, const char* key){
             return true;
         }
     }catch(nlohmann::detail::parse_error& e){
-        std::cout<<e.what()<<std::endl;
+        spdlog::error(e.what());
     }
     return false;
 }

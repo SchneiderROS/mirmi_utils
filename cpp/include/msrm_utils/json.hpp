@@ -8,6 +8,7 @@
 #include <array>
 #include "eigen3/Eigen/Core"
 #include "nlohmann/json.hpp"
+#include "spdlog/spdlog.h"
 
 namespace msrm_utils {
 
@@ -26,7 +27,7 @@ template<typename T, std::size_t S1,std::size_t S2> bool append_json_array(nlohm
         }
         return true;
     }catch(const nlohmann::detail::type_error& e){
-        std::cout<<e.what()<<std::endl;
+        spdlog::error(e.what());
         return false;
     }
 }
@@ -44,7 +45,7 @@ template<typename T, std::size_t S> bool append_json_array(nlohmann::json& param
         }
         return true;
     }catch(const nlohmann::detail::type_error& e){
-        std::cout<<e.what()<<std::endl;
+        spdlog::error(e.what());
         return false;
     }
 }
@@ -64,7 +65,7 @@ template<typename T, std::size_t S1,std::size_t S2> bool write_json_array(nlohma
             }
         }
     }catch(const nlohmann::detail::type_error& e){
-        std::cout<<e.what()<<std::endl;
+        spdlog::error(e.what());
         return false;
     }
     return true;
@@ -83,7 +84,7 @@ template<typename T, std::size_t S> bool write_json_array(nlohmann::json& paramJ
             paramJ.push_back(param[i]);
         }
     }catch(const nlohmann::detail::type_error& e){
-        std::cout<<e.what()<<std::endl;
+        spdlog::error(e.what());
         return false;
     }
     return true;
@@ -102,7 +103,7 @@ template<typename T> bool write_json_array(nlohmann::json& paramJ, const std::ve
             paramJ.push_back(param[i]);
         }
     }catch(const nlohmann::detail::type_error& e){
-        std::cout<<e.what()<<std::endl;
+        spdlog::error(e.what());
         return false;
     }
     return true;
@@ -124,10 +125,10 @@ template<typename T> bool read_json_param(const nlohmann::json& paramJ, const ch
         }
         paramJ[key].get_to(param);
     }catch(const nlohmann::detail::parse_error& e){
-        std::cout<<e.what()<<std::endl;
+        spdlog::error(e.what());
         return false;
     }catch(const nlohmann::detail::exception& e){
-        std::cout<<e.what()<<std::endl;
+        spdlog::error(e.what());
         return false;
     }
     return true;
@@ -145,10 +146,10 @@ template<typename T> std::optional<T> from_json(const nlohmann::json& paramJ, co
         paramJ[key].get_to(param);
         return param;
     }catch(const nlohmann::detail::parse_error& e){
-        std::cout<<e.what()<<std::endl;
+        spdlog::error(e.what());
         return {};
     }catch(const nlohmann::detail::exception& e){
-        std::cout<<e.what()<<std::endl;
+        spdlog::error(e.what());
         return {};
     }
 }
@@ -173,10 +174,10 @@ template<typename T,std::size_t S1,std::size_t S2> bool read_json_param(const nl
             }
         }
     }catch(const nlohmann::detail::parse_error& e){
-        std::cout<<e.what()<<std::endl;
+        spdlog::error(e.what());
         return false;
     }catch(const nlohmann::detail::exception& e){
-        std::cout<<e.what()<<std::endl;
+        spdlog::error(e.what());
         return false;
     }
     return true;
@@ -197,8 +198,8 @@ template<typename T,std::size_t S1,std::size_t S2> bool read_json_param(const nl
             return false;
         }
         if(paramJ[key].size()!=param.rows()*param.cols()){
-            std::cout<<"Can not copy json parameter, expected size ("<<std::to_string(param.rows()*param.cols())
-                        <<") is different from actual one ("<<std::to_string(paramJ.size())<<")."<<std::endl;
+            spdlog::error("Can not copy json parameter, expected size (" + std::to_string(param.rows()*param.cols())
+                        + ") is different from actual one (" + std::to_string(paramJ.size()) + ").");
             return false;
         }
         for(unsigned i=0;i<param.cols();i++){
@@ -207,10 +208,10 @@ template<typename T,std::size_t S1,std::size_t S2> bool read_json_param(const nl
             }
         }
     }catch(const nlohmann::detail::parse_error& e){
-        std::cout<<e.what()<<std::endl;
+        spdlog::error(e.what());
         return false;
     }catch(const nlohmann::detail::exception& e){
-        std::cout<<e.what()<<std::endl;
+        spdlog::error(e.what());
         return false;
     }
     return true;
@@ -235,10 +236,10 @@ template<typename T> bool read_json_param(const nlohmann::json& paramJ, const ch
             paramJ[key][i].get_to(param[i]);
         }
     }catch(const nlohmann::detail::parse_error& e){
-        std::cout<<e.what()<<std::endl;
+        spdlog::error(e.what());
         return false;
     }catch(const nlohmann::detail::exception& e){
-        std::cout<<e.what()<<std::endl;
+        spdlog::error(e.what());
         return false;
     }
     return true;
