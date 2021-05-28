@@ -437,7 +437,7 @@ public:
      * @param payload A payload consisting of a string
      * @return True if successful, false otherwise
      */
-    bool send(const std::string& payload);
+    bool send(const std::string& payload, bool withNullTerminatedCharacter = false);
 private:
     std::string m_address;
     unsigned m_port;
