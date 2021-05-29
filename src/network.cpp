@@ -452,7 +452,7 @@ bool JsonWebsocketServer::bind_method(const std::string &name, std::function<nlo
         return false;
     }
     m_method_callbacks.insert(std::make_pair(name, method));
-    m_method_arguments.insert(std::make_pair(name,arguments));
+    m_method_arguments.insert(std::make_pair(name, arguments));
     return true;
 }
 
@@ -737,8 +737,9 @@ JsonUDPClient::~JsonUDPClient(){
 bool JsonUDPClient::send(const std::string &method, const nlohmann::json &request){
     m_buffer_size=4096;
     m_slen=sizeof(m_si_other);
-    if ((m_socket=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) // If socket for outgoing connection could not be created...
-    {
+
+    if ((m_socket=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
+        // If socket for outgoing connection could not be created...
         std::cout<<"Could not create socket: "<<std::strerror(errno)<<std::endl;
         return false;
     }
@@ -897,9 +898,9 @@ bool UDPStreamSender::send(const std::string &payload, bool sendWithTerminatingN
     int messageLength = strlen(msg) + sendWithTerminatingNullCharacter;
 
     // The message is sent out to the peer robot.
-    int err=sendto(m_socket, msg, messageLength, 0 , (struct sockaddr *) &m_si_other, m_slen)<0;
-    if(err<0){ // If an error occured during sending...
-        std::cout<<"Could not send message: "<<std::strerror(errno)<<std::endl;
+    int err = sendto(m_socket, msg, messageLength, 0 , (struct sockaddr *) &m_si_other, m_slen) < 0;
+    if (err < 0) { // If an error occurred during sending...
+        std::cout << "Could not send message: " << std::strerror(errno) << std::endl;
         return false;
     }
     return true;
