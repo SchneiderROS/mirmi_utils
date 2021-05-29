@@ -67,6 +67,11 @@ _deps
 install
 
 
+# IDE files #
+###########
+.idea
+cmake-build-*
+
 # doxygen #
 ###########
 doc/html/*
