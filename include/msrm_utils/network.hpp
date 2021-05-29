@@ -435,9 +435,10 @@ public:
     /**
      * @brief send Send a single message to the server
      * @param payload A payload consisting of a string
-     * @return True if successful, false otherwise
+     * @param sendWithTerminatingNullCharacter Whether to add the \0 character at the and of the string or not
+     * @return true if successful, false otherwise
      */
-    bool send(const std::string& payload, bool withNullTerminatedCharacter = false);
+    bool send(const std::string& payload, bool sendWithTerminatingNullCharacter = false);
 private:
     std::string m_address;
     unsigned m_port;

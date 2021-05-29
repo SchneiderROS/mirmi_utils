@@ -892,9 +892,9 @@ bool UDPStreamSender::send(const std::vector<double>& payload){
     return true;
 }
 
-bool UDPStreamSender::send(const std::string &payload, bool withNullTerminatedCharacter){
+bool UDPStreamSender::send(const std::string &payload, bool sendWithTerminatingNullCharacter){
     const char* msg = payload.c_str();
-    int messageLength = strlen(msg) + (withNullTerminatedCharacter ? 1 : 0);
+    int messageLength = strlen(msg) + sendWithTerminatingNullCharacter;
 
     // The message is sent out to the peer robot.
     int err=sendto(m_socket, msg, messageLength, 0 , (struct sockaddr *) &m_si_other, m_slen)<0;
