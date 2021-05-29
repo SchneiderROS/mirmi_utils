@@ -766,6 +766,8 @@ bool JsonUDPClient::send(const std::string &method, const nlohmann::json &reques
     msg_json["request"]=request;
     std::string payload = msg_json.dump();
     const char* msg = payload.c_str();
+    // TODO: Should MSG_CONFIRM be set when coming from call_method? https://stackoverflow.com/a/42105469/6456598
+    //       "If you're sending an initial request ... you should *not* set the MSG_CONFIRM flag"
     int result = sendto(m_socket, msg, strlen(msg), MSG_CONFIRM, (struct sockaddr *) &m_si_other, m_slen);
     if(result<0){
         std::cout<<"Could not send message: "<<std::strerror(errno)<<std::endl;
