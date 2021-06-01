@@ -66,6 +66,8 @@ CMakeLists.txt.user*
 _deps
 install
 
+cmake/conan.cmake
+
 
 # doxygen #
 ###########
