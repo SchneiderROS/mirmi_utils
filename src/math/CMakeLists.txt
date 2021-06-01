@@ -1,11 +1,11 @@
-find_package(Eigen3 REQUIRED)
-if(NOT TARGET Eigen3::Eigen3)
-  add_library(Eigen3::Eigen3 INTERFACE IMPORTED)
-  set_target_properties(Eigen3::Eigen3 PROPERTIES
-    INTERFACE_INCLUDE_DIRECTORIES ${EIGEN3_INCLUDE_DIRS}
-    INTERFACE_COMPILE_DEFINITIONS "${EIGEN3_DEFINITIONS}"
-  )
-endif()
+#find_package(Eigen3 REQUIRED)
+#if(NOT TARGET Eigen3::Eigen3)
+#  add_library(Eigen3::Eigen3 INTERFACE IMPORTED)
+#  set_target_properties(Eigen3::Eigen3 PROPERTIES
+#    INTERFACE_INCLUDE_DIRECTORIES ${EIGEN3_INCLUDE_DIRS}
+#    INTERFACE_COMPILE_DEFINITIONS "${EIGEN3_DEFINITIONS}"
+#  )
+#endif()
 
 
 add_library(math_lib
@@ -22,7 +22,7 @@ target_link_libraries(math_lib
     project_options
     project_warnings
     PUBLIC
-    Eigen3::Eigen3
+#    Eigen3::Eigen3
     )
 
 install(TARGETS math_lib
