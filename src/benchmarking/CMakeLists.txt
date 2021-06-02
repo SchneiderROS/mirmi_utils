@@ -1,20 +1,32 @@
-add_library(benchmarking_lib
+set(MODULE_NAME benchmarking)
+
+add_library(${MODULE_NAME}
     src/benchmarking.cpp
     )
 
-target_include_directories(benchmarking_lib
+add_library(${CMAKE_PROJECT_NAME}::${MODULE_NAME} ALIAS ${MODULE_NAME})
+
+target_include_directories(${MODULE_NAME}
     PUBLIC include
     PRIVATE src
     )
 
-target_link_libraries(benchmarking_lib
+set(${MODULE_NAME}_HEADER_FILES
+    include/${CMAKE_PROJECT_NAME}/${MODULE_NAME}/benchmarking.hpp
+    )
+
+target_link_libraries(${MODULE_NAME}
     PRIVATE
     project_options
     project_warnings
     PUBLIC
     )
 
-install(TARGETS benchmarking_lib
+set_target_properties(${MODULE_NAME} PROPERTIES PUBLIC_HEADER "${${MODULE_NAME}_HEADER_FILES}")
+
+apply_module_options(${MODULE_NAME})
+
+install(TARGETS ${MODULE_NAME}
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/
     RUNTIME DESTINATION       ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION       ${CMAKE_INSTALL_LIBDIR}

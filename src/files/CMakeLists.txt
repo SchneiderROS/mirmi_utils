@@ -1,6 +1,7 @@
 set(MODULE_NAME files)
 
 add_library(${MODULE_NAME}
+    STATIC
     src/files.cpp
     )
 
@@ -23,7 +24,8 @@ target_link_libraries(${MODULE_NAME}
     )
 
 set_target_properties(${MODULE_NAME} PROPERTIES PUBLIC_HEADER "${${MODULE_NAME}_HEADER_FILES}")
-set_target_properties(${MODULE_NAME} PROPERTIES UNITY_BUILD ON)
+
+apply_module_options(${MODULE_NAME})
 
 install(TARGETS ${MODULE_NAME}
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/

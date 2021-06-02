@@ -11,17 +11,33 @@ set(PROJECT_VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_
 
 project(msrm_cpp_utils VERSION ${PROJECT_VERSION}
     DESCRIPTION "multi-purpose function library"
-    LANGUAGES CXX)
+    LANGUAGES CXX
+    )
+
+
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    message(STATUS "Setting build type to 'Release' as none was specified.")
+    set(CMAKE_BUILD_TYPE
+        Release
+        CACHE STRING "Choose the type of build." FORCE)
+    # Set the possible values of build type for cmake-gui, ccmake
+    set_property(
+        CACHE CMAKE_BUILD_TYPE
+        PROPERTY STRINGS
+        "Debug"
+        "Release"
+        "MinSizeRel"
+        "RelWithDebInfo")
+endif()
+
+include(cmake/ApplyModuleOptions.cmake)
+include(cmake/PreventInSourceBuilds.cmake)
 
 configure_file (
     "${PROJECT_SOURCE_DIR}/include/commons/config.hpp.in"
     "${PROJECT_BINARY_DIR}/include/commons/config.hpp"
     )
 include_directories("${PROJECT_BINARY_DIR}/src/include")
-
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release)
-endif()
 
 if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/conan.cmake")
     message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
@@ -30,7 +46,6 @@ if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/conan.cmake")
 endif()
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/conan.cmake)
 
-# This is supposedly the minimal setup in CMake for Conan. After these lines, everything should be ready to use
 conan_check(REQUIRED)
 conan_cmake_run(
     CONANFILE
@@ -50,23 +65,57 @@ endif()
 conan_basic_setup()
 
 
-option(ONLY_COVERAGE "Build only tests necessary for coverage" FALSE)
-option(LIBCPP "Build with libc++" FALSE)
-option(ENABLE_COVERAGE "Enable coverage reporting for gcc/clang" FALSE)
-option(ENABLE_ASAN "Enable address sanitizer" FALSE)
-option(BUILD_SHARED_LIBS "Enable compilation of shared libraries" FALSE)
-option(ENABLE_TESTING "Enable the building of the test" FALSE)
-option(ENABLE_CLANG_TIDY "Enable testing with clang-tidy" FALSE)
-option(ENABLE_CPPCHECK "Enable testing with cppcheck" FALSE)
-option(SIMPLE_BUILD "Build the project as minimally as possible" FALSE)
+option(ONLY_COVERAGE "Build only tests necessary for coverage" ON)
+option(LIBCPP "Build with libc++" ON)
+option(ENABLE_COVERAGE "Enable coverage reporting for gcc/clang" ON)
+option(ENABLE_ASAN "Enable address sanitizer" OFF)
+option(BUILD_SHARED_LIBS "Enable compilation of shared libraries" ON)
+option(ENABLE_TESTING "Enable the building of the test" ON)
+option(ENABLE_CLANG_TIDY "Enable testing with clang-tidy" ON)
+option(ENABLE_CPPCHECK "Enable testing with cppcheck" OFF)
+option(ENABLE_INCLUDE_WHAT_YOU_USE "Enable static analysis with include-what-you-use" OFF)
+option(SIMPLE_BUILD "Build the project as minimally as possible" ON)
 option(BUILD_DOC "Build the project's documentation" ON)
-option(FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." TRUE)
-option(DEBUG_LOGGING "Enabling debug logging" FALSE)
+option(FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." ON)
+option(DEBUG_LOGGING "Enabling debug logging" ON)
+option(ENABLE_IPO "Enable Interprocedural Optimization, aka Link Time Optimization (LTO)" ON)
+option(ENABLE_PCH "Enable Precompiled Headers" ON)
+option(ENABLE_UNITY_BUILD "Enable unity build" ON)
 
 add_library(project_warnings INTERFACE)
 add_library(project_options INTERFACE)
 
-target_compile_features(project_options INTERFACE cxx_std_17)
+target_compile_features(project_options
+    INTERFACE
+    cxx_std_17)
+
+if(ENABLE_PCH)
+    target_precompile_headers(
+        project_options
+        INTERFACE
+        ${CMAKE_SOURCE_DIR}/include/commons/pch.hpp
+        )
+endif()
+
+target_compile_options(project_warnings
+    INTERFACE
+    #    -Wall
+    #    -Wextra
+    #    -Wshadow
+    #    -Wnon-virtual-dtor
+    #    -Wold-style-cast
+    #    -Wcast-align
+    #    -Wunused
+    #    -Woverloaded-virtual
+    #    -Wpedantic
+    #    -Wconversion
+    #    -Wsign-conversion
+    #    -Wnull-dereference
+    #    -Wdouble-promotion
+    #    -Wformat=2
+    -Wreturn-type
+    -Wuninitialized
+    )
 
 if(ONLY_COVERAGE OR ENABLE_COVERAGE)
     target_compile_options(project_options INTERFACE --coverage -O0 -g)
@@ -78,32 +127,14 @@ if(ENABLE_ASAN)
     target_link_libraries(project_options INTERFACE -fsanitize=address)
 endif()
 
-target_compile_options(project_warnings
-    INTERFACE
-#    -Wall
-#    -Wextra
-#    -Wshadow
-#    -Wnon-virtual-dtor
-#    -Wold-style-cast
-#    -Wcast-align
-#    -Wunused
-#    -Woverloaded-virtual
-#    -Wpedantic
-#    -Wconversion
-#    -Wsign-conversion
-#    -Wnull-dereference
-#    -Wdouble-promotion
-#    -Wformat=2
-    )
-
 # some GCC specific warnings. These flags are added only if the used compiler is GCC.
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     target_compile_options(project_warnings
         INTERFACE
-        -Wmisleading-indentation
-        -Wduplicated-cond
-        -Wlogical-op
-        -Wuseless-cast
+#        -Wmisleading-indentation
+#        -Wduplicated-cond
+#        -Wlogical-op
+#        -Wuseless-cast
         )
     target_link_libraries(project_options INTERFACE stdc++fs)
 endif()
@@ -122,27 +153,7 @@ if(CCACHE)
     set(CMAKE_CUDA_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
 endif()
 
-if(ENABLE_CPPCHECK)
-    find_program(CPPCHECK cppcheck)
-    if(CPPCHECK)
-        set(CMAKE_CXX_CPPCHECK
-            ${CPPCHECK}
-            --suppress=syntaxError
-            --enable=all
-            --inconclusive)
-    else()
-        message(SEND_ERROR "cppcheck requested but executable not found")
-    endif()
-endif()
-
-if(ENABLE_CLANG_TIDY)
-    find_program(CLANGTIDY clang-tidy)
-    if(CLANGTIDY)
-        set(CMAKE_CXX_CLANG_TIDY ${CLANGTIDY})
-    else()
-        message(SEND_ERROR "clang-tidy requested but executable not found")
-    endif()
-endif()
+include(cmake/StaticAnalyzers.cmake)
 
 if(BUILD_DOC)
     find_package(Doxygen)
@@ -346,19 +357,21 @@ add_subdirectory(src)
 
 
 message("#########################################")
-message("\t \t Summary")
-message("#########################################")
-message("Build type:       \t ${CMAKE_BUILD_TYPE}")
-message("Install prefix:   \t ${CMAKE_INSTALL_PREFIX}")
-message("Testing enabled:  \t ${ENABLE_TESTING}")
-message("Clang-tidy:       \t ${ENABLE_CLANG_TIDY}")
-message("Cppcheck:         \t ${ENABLE_CPPCHECK}")
-message("Compiler:         \t ${CMAKE_CXX_COMPILER_ID}")
-message("Sanizizers:       \t ${ENABLE_ASAN}")
-message("Shared libs:      \t ${BUILD_SHARED_LIBS}")
-message("Build libcpp:     \t ${LIBCPP}")
-message("CCache executable:\t ${CCACHE}")
-message("Building doc:     \t ${BUILD_DOC}")
-message("------------------------------------------")
-message("Version:          \t ${PROJECT_VERSION}")
-message("########################################")
+    message("\t \t Summary")
+    message("#########################################")
+        message("Build type:       \t ${CMAKE_BUILD_TYPE}")
+        message("Install prefix:   \t ${CMAKE_INSTALL_PREFIX}")
+        message("Testing enabled:  \t ${ENABLE_TESTING}")
+        message("Clang-tidy:       \t ${ENABLE_CLANG_TIDY}")
+        message("Cppcheck:         \t ${ENABLE_CPPCHECK}")
+        message("Compiler:         \t ${CMAKE_CXX_COMPILER_ID}")
+        message("Sanizizers:       \t ${ENABLE_ASAN}")
+        message("Shared libs:      \t ${BUILD_SHARED_LIBS}")
+        message("Build libcpp:     \t ${LIBCPP}")
+        message("CCache executable:\t ${CCACHE}")
+        message("PCH:              \t ${ENABLE_PCH}")
+        message("IPO:              \t ${ENABLE_IPO}")
+        message("Building doc:     \t ${BUILD_DOC}")
+        message("------------------------------------------")
+        message("Version:          \t ${PROJECT_VERSION}")
+        message("########################################")

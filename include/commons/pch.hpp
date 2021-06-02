@@ -37,9 +37,3 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <linux/videodev2.h>
-
-#include <eigen3/Eigen/Core>
-#include <eigen3/Eigen/Geometry>
-#include <eigen3/Eigen/Dense>
-
-#include <nlohmann/json.hpp>

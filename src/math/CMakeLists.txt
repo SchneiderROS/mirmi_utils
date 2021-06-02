@@ -1,31 +1,32 @@
-#find_package(Eigen3 REQUIRED)
-#if(NOT TARGET Eigen3::Eigen3)
-#  add_library(Eigen3::Eigen3 INTERFACE IMPORTED)
-#  set_target_properties(Eigen3::Eigen3 PROPERTIES
-#    INTERFACE_INCLUDE_DIRECTORIES ${EIGEN3_INCLUDE_DIRS}
-#    INTERFACE_COMPILE_DEFINITIONS "${EIGEN3_DEFINITIONS}"
-#  )
-#endif()
+set(MODULE_NAME math)
 
-
-add_library(math_lib
+add_library(${MODULE_NAME}
     src/math.cpp
     )
 
-target_include_directories(math_lib
+add_library(${CMAKE_PROJECT_NAME}::${MODULE_NAME} ALIAS ${MODULE_NAME})
+
+target_include_directories(${MODULE_NAME}
     PUBLIC include
     PRIVATE src
     )
 
-target_link_libraries(math_lib
+set(${MODULE_NAME}_HEADER_FILES
+    include/${CMAKE_PROJECT_NAME}/${MODULE_NAME}/math.hpp
+    )
+
+target_link_libraries(${MODULE_NAME}
     PRIVATE
     project_options
     project_warnings
     PUBLIC
-#    Eigen3::Eigen3
     )
 
-install(TARGETS math_lib
+set_target_properties(${MODULE_NAME} PROPERTIES PUBLIC_HEADER "${${MODULE_NAME}_HEADER_FILES}")
+
+apply_module_options(${MODULE_NAME})
+
+install(TARGETS ${MODULE_NAME}
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/
     RUNTIME DESTINATION       ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION       ${CMAKE_INSTALL_LIBDIR}
