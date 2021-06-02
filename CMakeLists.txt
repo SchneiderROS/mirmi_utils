@@ -11,6 +11,36 @@ project(msrm_cpp_utils VERSION ${MSRM_UTILS_VERSION}
     DESCRIPTION "multi-purpose function library"
     LANGUAGES CXX)
 
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif()
+
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/conan.cmake")
+    message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
+    file(DOWNLOAD  "https://raw.githubusercontent.com/conan-io/cmake-conan/master/conan.cmake"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/conan.cmake")
+endif()
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/conan.cmake)
+
+# This is supposedly the minimal setup in CMake for Conan. After these lines, everything should be ready to use
+conan_check(REQUIRED)
+conan_cmake_run(
+    CONANFILE
+    conanfile.txt
+    BASIC_SETUP
+    CONAN_COMMAND
+    ${CONAN_CMD}
+    CMAKE_TARGETS
+    BUILD
+    missing
+)
+if(CMAKE_BUILD_TYPE MATCHES Release)
+    include(${CMAKE_SOURCE_DIR}/build/release/conanbuildinfo.cmake)
+elseif(CMAKE_BUILD_TYPE MATCHES Debug)
+    include(${CMAKE_SOURCE_DIR}/build/debug/conanbuildinfo.cmake)
+endif()
+conan_basic_setup()
+
 find_program(FPING fping)
 if(NOT FPING)
     message(FATAL_ERROR "fping not found!")
@@ -65,17 +95,6 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
 
 endif()
-
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release)
-endif()
-
-if(CMAKE_BUILD_TYPE MATCHES Release)
-    include(${CMAKE_SOURCE_DIR}/build/release/conanbuildinfo.cmake)
-elseif(CMAKE_BUILD_TYPE MATCHES Debug)
-    include(${CMAKE_SOURCE_DIR}/build/debug/conanbuildinfo.cmake)
-endif()
-conan_basic_setup()
 
 option(BUILD_TESTING "Build tests" OFF)
 option(USE_PCH "Use precompiled headers" ON)
@@ -133,6 +152,9 @@ target_link_libraries(msrm_cpp_utils
     ssl
     z
     $<BUILD_INTERFACE:json-rpc-cxx>
+    $<BUILD_INTERFACE:nlohmann_json::nlohmann_json>
+    $<BUILD_INTERFACE:simple-websocket-server>
+    $<BUILD_INTERFACE:httplib>
     )
 
 
