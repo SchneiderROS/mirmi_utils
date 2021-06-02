@@ -12,5 +12,7 @@ function(apply_module_options MODULE)
         set_target_properties(${MODULE} PROPERTIES UNITY_BUILD ON)
     endif()
 
+    set_property(TARGET ${MODULE} PROPERTY POSITION_INDEPENDENT_CODE ON)
+
 
 endfunction()

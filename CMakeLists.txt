@@ -45,7 +45,7 @@ include_directories("${PROJECT_BINARY_DIR}/src/include")
 option(ONLY_COVERAGE "Build only tests necessary for coverage" ON)
 option(LIBCPP "Build with libc++" ON)
 option(ENABLE_COVERAGE "Enable coverage reporting for gcc/clang" ON)
-option(ENABLE_ASAN "Enable address sanitizer" OFF)
+option(ENABLE_ASAN "Enable address sanitizer" ON)
 option(BUILD_SHARED_LIBS "Enable compilation of shared libraries" OFF)
 option(ENABLE_TESTING "Enable the building of the test" ON)
 option(ENABLE_CLANG_TIDY "Enable testing with clang-tidy" OFF)
@@ -86,8 +86,8 @@ target_compile_options(project_warnings
     #    -Woverloaded-virtual
     #    -Wpedantic
     #    -Wconversion
-    #    -Wsign-conversion
-    #    -Wnull-dereference
+    -Wsign-conversion
+    -Wnull-dereference
     #    -Wdouble-promotion
     #    -Wformat=2
     -Wreturn-type
@@ -246,12 +246,13 @@ message("#########################################")
         message("Clang-tidy:       \t ${ENABLE_CLANG_TIDY}")
         message("Cppcheck:         \t ${ENABLE_CPPCHECK}")
         message("Compiler:         \t ${CMAKE_CXX_COMPILER_ID}")
-        message("Sanizizers:       \t ${ENABLE_ASAN}")
+        message("Sanitizers:       \t ${ENABLE_ASAN}")
         message("Shared libs:      \t ${BUILD_SHARED_LIBS}")
         message("Build libcpp:     \t ${LIBCPP}")
         message("CCache executable:\t ${CCACHE}")
         message("PCH:              \t ${ENABLE_PCH}")
         message("IPO:              \t ${ENABLE_IPO}")
+        message("Unity build:      \t ${ENABLE_UNITY_BUILD}")
         message("Building doc:     \t ${BUILD_DOC}")
         message("------------------------------------------")
         message("Version:          \t ${PROJECT_VERSION}")
