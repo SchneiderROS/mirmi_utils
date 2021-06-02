@@ -31,7 +31,10 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 include(cmake/ApplyModuleOptions.cmake)
+include(cmake/Conan.cmake)
+include(cmake/Doxygen.cmake)
 include(cmake/PreventInSourceBuilds.cmake)
+include(cmake/StaticAnalyzers.cmake)
 
 configure_file (
     "${PROJECT_SOURCE_DIR}/include/commons/config.hpp.in"
@@ -39,43 +42,17 @@ configure_file (
     )
 include_directories("${PROJECT_BINARY_DIR}/src/include")
 
-if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/conan.cmake")
-    message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-    file(DOWNLOAD  "https://raw.githubusercontent.com/conan-io/cmake-conan/master/conan.cmake"
-        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/conan.cmake")
-endif()
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/conan.cmake)
-
-conan_check(REQUIRED)
-conan_cmake_run(
-    CONANFILE
-    conanfile.txt
-    BASIC_SETUP
-    CONAN_COMMAND
-    ${CONAN_CMD}
-    CMAKE_TARGETS
-    BUILD
-    missing
-    )
-if(CMAKE_BUILD_TYPE MATCHES Release)
-    include(${CMAKE_SOURCE_DIR}/build/release/conanbuildinfo.cmake)
-elseif(CMAKE_BUILD_TYPE MATCHES Debug)
-    include(${CMAKE_SOURCE_DIR}/build/debug/conanbuildinfo.cmake)
-endif()
-conan_basic_setup()
-
-
 option(ONLY_COVERAGE "Build only tests necessary for coverage" ON)
 option(LIBCPP "Build with libc++" ON)
 option(ENABLE_COVERAGE "Enable coverage reporting for gcc/clang" ON)
 option(ENABLE_ASAN "Enable address sanitizer" OFF)
-option(BUILD_SHARED_LIBS "Enable compilation of shared libraries" ON)
+option(BUILD_SHARED_LIBS "Enable compilation of shared libraries" OFF)
 option(ENABLE_TESTING "Enable the building of the test" ON)
-option(ENABLE_CLANG_TIDY "Enable testing with clang-tidy" ON)
+option(ENABLE_CLANG_TIDY "Enable testing with clang-tidy" OFF)
 option(ENABLE_CPPCHECK "Enable testing with cppcheck" OFF)
 option(ENABLE_INCLUDE_WHAT_YOU_USE "Enable static analysis with include-what-you-use" OFF)
 option(SIMPLE_BUILD "Build the project as minimally as possible" ON)
-option(BUILD_DOC "Build the project's documentation" ON)
+option(BUILD_DOC "Build the project's documentation" OFF)
 option(FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." ON)
 option(DEBUG_LOGGING "Enabling debug logging" ON)
 option(ENABLE_IPO "Enable Interprocedural Optimization, aka Link Time Optimization (LTO)" ON)
@@ -131,10 +108,10 @@ endif()
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     target_compile_options(project_warnings
         INTERFACE
-#        -Wmisleading-indentation
-#        -Wduplicated-cond
-#        -Wlogical-op
-#        -Wuseless-cast
+        #        -Wmisleading-indentation
+        #        -Wduplicated-cond
+        #        -Wlogical-op
+        #        -Wuseless-cast
         )
     target_link_libraries(project_options INTERFACE stdc++fs)
 endif()
@@ -153,26 +130,6 @@ if(CCACHE)
     set(CMAKE_CUDA_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
 endif()
 
-include(cmake/StaticAnalyzers.cmake)
-
-if(BUILD_DOC)
-    find_package(Doxygen)
-    if (DOXYGEN_FOUND)
-        SET(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in)
-        SET(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
-
-        configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
-
-        add_custom_target(doc ALL
-            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-            COMMENT "Buidling Doxygen documentation"
-            VERBATIM )
-    else (DOXYGEN_FOUND)
-        message("No doxygen binary found on the system.")
-        SET(${BUILD_DOC} OFF)
-    endif ()
-endif()
 
 
 find_program(FPING fping)
@@ -226,85 +183,9 @@ add_subdirectory(src)
 
 #endif()
 
-#option(BUILD_TESTING "Build tests" OFF)
-#option(USE_PCH "Use precompiled headers" ON)
-#option(STATIC_LIB "Compile a static library" ON)
-#enable_testing()
-
-#set(${CMAKE_PROJECT_NAME}_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
-
-#set(${CMAKE_PROJECT_NAME}_SRCS
-#    src/conversion.cpp
-#    src/files.cpp
-#    src/json.cpp
-#    src/math.cpp
-#    src/network.cpp
-#    src/output.cpp
-#    src/system.cpp
-#    src/benchmarking.cpp
-#    src/geometry.cpp
-#    )
-
-#set(${CMAKE_PROJECT_NAME}_HEADER_FILES
-#    ${${CMAKE_PROJECT_NAME}_INCLUDE_DIR}/msrm_utils/conversion.hpp
-#    ${${CMAKE_PROJECT_NAME}_INCLUDE_DIR}/msrm_utils/files.hpp
-#    ${${CMAKE_PROJECT_NAME}_INCLUDE_DIR}/msrm_utils/json.hpp
-#    ${${CMAKE_PROJECT_NAME}_INCLUDE_DIR}/msrm_utils/math.hpp
-#    ${${CMAKE_PROJECT_NAME}_INCLUDE_DIR}/msrm_utils/network.hpp
-#    ${${CMAKE_PROJECT_NAME}_INCLUDE_DIR}/msrm_utils/output.hpp
-#    ${${CMAKE_PROJECT_NAME}_INCLUDE_DIR}/msrm_utils/system.hpp
-#    ${${CMAKE_PROJECT_NAME}_INCLUDE_DIR}/msrm_utils/benchmarking.hpp
-#    ${${CMAKE_PROJECT_NAME}_INCLUDE_DIR}/msrm_utils/geometry.hpp
-#    )
-
-#set(${CMAKE_PROJECT_NAME}_PRIVATE_HEADER_FILES
-#    ${${CMAKE_PROJECT_NAME}_INCLUDE_DIR}/commons/pch.hpp
-#    )
-
-#if(STATIC_LIB)
-#    add_library(${CMAKE_PROJECT_NAME} STATIC ${${CMAKE_PROJECT_NAME}_SRCS} ${${CMAKE_PROJECT_NAME}_PRIVATE_HEADER_FILES})
-#else()
-#    add_library(${CMAKE_PROJECT_NAME} SHARED ${${CMAKE_PROJECT_NAME}_SRCS} ${${CMAKE_PROJECT_NAME}_PRIVATE_HEADER_FILES})
-#endif()
-#add_library(${CMAKE_PROJECT_NAME}::${CMAKE_PROJECT_NAME} ALIAS ${CMAKE_PROJECT_NAME})
-
-#set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${${CMAKE_PROJECT_NAME}_HEADER_FILES}")
-#set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES UNITY_BUILD ON)
-
-#target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
-#    "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
-#    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
-#    )
-
-#target_link_libraries(${CMAKE_PROJECT_NAME}
-#    PRIVATE
-#    project_options
-#    project_warnings
-#    PUBLIC
-#    ssl
-#    z
-#    $<BUILD_INTERFACE:json-rpc-cxx>
-#    $<BUILD_INTERFACE:nlohmann_json::nlohmann_json>
-#    $<BUILD_INTERFACE:simple-websocket-server>
-#    $<BUILD_INTERFACE:httplib>
-#    )
 
 
 
-# Testing only available if this is the main app AND BUILD_TESTING flag set
-#if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME) AND BUILD_TESTING)
-#    add_subdirectory(tests)
-#endif()
-
-#if(USE_PCH)
-#    target_precompile_headers(${CMAKE_PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include/commons/pch.hpp)
-#endif()
-
-#include(CheckIPOSupported)
-#check_ipo_supported(RESULT result)
-#if(result)
-#    set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
-#endif()
 
 #if(MSRM_CPP_UTILS_INSTALL2)
 #    message(STATUS "Generating install")

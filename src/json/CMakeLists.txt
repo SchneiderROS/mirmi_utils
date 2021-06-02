@@ -1,18 +1,32 @@
 set(MODULE_NAME json)
 
-add_library(${MODULE_NAME}
+set(${MODULE_NAME}_SRC
     src/json.cpp
     )
+
+set(${MODULE_NAME}_HEADER_FILES
+    include/${CMAKE_PROJECT_NAME}/${MODULE_NAME}/json.hpp
+    )
+
+if(BUILD_SHARED_LIBS)
+    add_library(${MODULE_NAME}
+        SHARED
+        ${${MODULE_NAME}_SRC}
+        ${${MODULE_NAME}_HEADER_FILES}
+        )
+else()
+    add_library(${MODULE_NAME}
+        STATIC
+        ${${MODULE_NAME}_SRC}
+        ${${MODULE_NAME}_HEADER_FILES}
+        )
+endif()
 
 add_library(${CMAKE_PROJECT_NAME}::${MODULE_NAME} ALIAS ${MODULE_NAME})
 
 target_include_directories(${MODULE_NAME}
     PUBLIC include
     PRIVATE src
-    )
-
-set(${MODULE_NAME}_HEADER_FILES
-    include/${CMAKE_PROJECT_NAME}/${MODULE_NAME}/json.hpp
     )
 
 target_link_libraries(${MODULE_NAME}
