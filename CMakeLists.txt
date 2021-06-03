@@ -142,23 +142,54 @@ set(FETCHCONTENT_QUIET OFF)
 set(FETCHCONTENT_BASE_DIR ${CMAKE_SOURCE_DIR}/_deps)
 include(cmake/extern.cmake)
 
+install(TARGETS project_options EXPORT ProjectOptionsTargets)
+install(TARGETS project_warnings EXPORT ProjectWarningsTargets)
+
+install(EXPORT ProjectOptionsTargets
+    FILE ProjectOptionsTargets.cmake
+    NAMESPACE ${PROJECT_NAME}::ProjectOptionsTargets::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ProjectOptionsTargets
+    )
+install(EXPORT ProjectWarningsTargets
+    FILE ProjectWarningsTargets.cmake
+    NAMESPACE ${PROJECT_NAME}::ProjectWarningsTargets::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ProjectWarningsTargets
+    )
+
 add_subdirectory(src)
 
-# ---------------------------------------------------------------------------------------
-# Set MSRM_UTILS_MAIN_PROJECT to ON if we are building robotp2p
-# ---------------------------------------------------------------------------------------
-# Check if msrm_utils is being used directly or via add_subdirectory, but allow overriding
-#if(NOT DEFINED MSRM_CPP_UTILS_MAIN_PROJECT)
-#    if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-#        set(MSRM_CPP_UTILS_MAIN_PROJECT ON)
-#    else()
-#        set(MSRM_CPP_UTILS_MAIN_PROJECT OFF)
-#    endif()
-#endif()
+include(cmake/InstallDeps.cmake)
 
-#option(MSRM_CPP_UTILS_INSTALL "Generate the install target" ${MSRM_CPP_UTILS_MAIN_PROJECT})
-## set the verbosity level for logging/printing
-#add_definitions(-Dverbose_level=1)
+
+message(STATUS "Generating install")
+set(project_config_in "${CMAKE_CURRENT_LIST_DIR}/cmake/${PROJECT_NAME}Config.cmake.in")
+set(project_config_out "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake")
+set(config_targets_file "${PROJECT_NAME}ConfigTargets.cmake")
+set(version_config_file "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake")
+set(export_dest_dir "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+set(pkgconfig_install_dir "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+set(pkg_config "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc")
+message(STATUS "pkg_config=${pkg_config}")
+
+# ---------------------------------------------------------------------------------------
+# Install pkg-config file
+# ---------------------------------------------------------------------------------------
+configure_file("cmake/${PROJECT_NAME}.pc.in" "${pkg_config}" @ONLY)
+install(FILES "${pkg_config}" DESTINATION "${pkgconfig_install_dir}")
+
+# ---------------------------------------------------------------------------------------
+# Install CMake config files
+# ---------------------------------------------------------------------------------------
+include(CMakePackageConfigHelpers)
+configure_file("${project_config_in}" "${project_config_out}" @ONLY)
+
+write_basic_package_version_file("${version_config_file}" COMPATIBILITY SameMajorVersion)
+install(FILES "${project_config_out}" "${version_config_file}" DESTINATION "${export_dest_dir}")
+
+# ---------------------------------------------------------------------------------------
+# Support creation of installable packages
+# ---------------------------------------------------------------------------------------
+include(cmake/${PROJECT_NAME}CPack.cmake)
 
 # Set global flags only if this is the main project
 #if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
@@ -181,59 +212,6 @@ add_subdirectory(src)
 #    endif()
 
 
-#endif()
-
-
-
-
-
-#if(MSRM_CPP_UTILS_INSTALL2)
-#    message(STATUS "Generating install")
-#    set(project_config_in "${CMAKE_CURRENT_LIST_DIR}/cmake/msrm_cpp_utilsConfig.cmake.in")
-#    set(project_config_out "${CMAKE_CURRENT_BINARY_DIR}/msrm_cpp_utilsConfig.cmake")
-#    set(config_targets_file "msrm_cpp_utilsConfigTargets.cmake")
-#    set(version_config_file "${CMAKE_CURRENT_BINARY_DIR}/msrm_cpp_utilsConfigVersion.cmake")
-#    set(export_dest_dir "${CMAKE_INSTALL_LIBDIR}/cmake/msrm_cpp_utils")
-#    set(pkgconfig_install_dir "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
-#    set(pkg_config "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc")
-#    message(STATUS "pkg_config=${pkg_config}")
-
-#    # ---------------------------------------------------------------------------------------
-#    # Install targets
-#    # ---------------------------------------------------------------------------------------
-
-#    install(TARGETS ${CMAKE_PROJECT_NAME}
-#        EXPORT ${CMAKE_PROJECT_NAME}-targets
-#        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-#        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${CMAKE_PROJECT_NAME}
-#        )
-
-
-
-#    # ---------------------------------------------------------------------------------------
-#    # Install pkg-config file
-#    # ---------------------------------------------------------------------------------------
-#    configure_file("cmake/${PROJECT_NAME}.pc.in" "${pkg_config}" @ONLY)
-#    install(FILES "${pkg_config}" DESTINATION "${pkgconfig_install_dir}")
-
-#    # ---------------------------------------------------------------------------------------
-#    # Install CMake config files
-#    # ---------------------------------------------------------------------------------------
-#    install(EXPORT ${CMAKE_PROJECT_NAME}-targets
-#        FILE ${config_targets_file}
-#        DESTINATION ${export_dest_dir}
-#        NAMESPACE ${CMAKE_PROJECT_NAME}::)
-
-#    include(CMakePackageConfigHelpers)
-#    configure_file("${project_config_in}" "${project_config_out}" @ONLY)
-
-#    write_basic_package_version_file("${version_config_file}" COMPATIBILITY SameMajorVersion)
-#    install(FILES "${project_config_out}" "${version_config_file}" DESTINATION "${export_dest_dir}")
-
-#    # ---------------------------------------------------------------------------------------
-#    # Support creation of installable packages
-#    # ---------------------------------------------------------------------------------------
-#    include(cmake/msrm_cpp_utilsCPack.cmake)
 #endif()
 
 

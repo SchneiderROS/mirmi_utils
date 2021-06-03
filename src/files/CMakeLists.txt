@@ -25,8 +25,11 @@ endif()
 add_library(${CMAKE_PROJECT_NAME}::${MODULE_NAME} ALIAS ${MODULE_NAME})
 
 target_include_directories(${MODULE_NAME}
-    PUBLIC include
-    PRIVATE src
+    PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    PRIVATE
+    src
     )
 
 target_link_libraries(${MODULE_NAME}
@@ -48,8 +51,8 @@ install(TARGETS ${MODULE_NAME} EXPORT ${MODULE_NAME}Targets
     ARCHIVE DESTINATION       ${CMAKE_INSTALL_SHAREDSTATEDIR}
     )
 
-#install(EXPORT ${MODULE_NAME}Targets
-#    FILE ${MODULE_NAME}Targets.cmake
-#    NAMESPACE ${PROJECT_NAME}::${MODULE_NAME}::
-#    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${MODULE_NAME}
-#    )
+install(EXPORT ${MODULE_NAME}Targets
+    FILE ${MODULE_NAME}Targets.cmake
+    NAMESPACE ${PROJECT_NAME}::${MODULE_NAME}::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${MODULE_NAME}
+    )
