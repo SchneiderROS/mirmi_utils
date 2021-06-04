@@ -141,6 +141,9 @@ include(cmake/FetchContent.cmake)
 include(cmake/InstallDeps.cmake)
 
 
+add_library(${PROJECT_NAME}::project_options ALIAS project_options)
+add_library(${PROJECT_NAME}::project_warnings ALIAS project_warnings)
+
 install(TARGETS project_options EXPORT ProjectOptionsTargets)
 install(TARGETS project_warnings EXPORT ProjectWarningsTargets)
 
