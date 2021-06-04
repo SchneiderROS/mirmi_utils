@@ -5,7 +5,7 @@ set(${MODULE_NAME}_SRC
     )
 
 set(${MODULE_NAME}_HEADER_FILES
-    include/${CMAKE_PROJECT_NAME}/${MODULE_NAME}/network.hpp
+    include/${PROJECT_NAME}/${MODULE_NAME}/network.hpp
     )
 
 if(BUILD_SHARED_LIBS)
@@ -22,7 +22,7 @@ else()
         )
 endif()
 
-add_library(${CMAKE_PROJECT_NAME}::${MODULE_NAME} ALIAS ${MODULE_NAME})
+add_library(${PROJECT_NAME}::${MODULE_NAME} ALIAS ${MODULE_NAME})
 
 target_include_directories(${MODULE_NAME}
     PUBLIC
@@ -36,7 +36,7 @@ target_link_libraries(${MODULE_NAME}
     PRIVATE
     project_options
     project_warnings
-    ${CMAKE_PROJECT_NAME}::files
+    ${PROJECT_NAME}::files
     PUBLIC
     $<BUILD_INTERFACE:json-rpc-cxx>
     $<BUILD_INTERFACE:nlohmann_json::nlohmann_json>
