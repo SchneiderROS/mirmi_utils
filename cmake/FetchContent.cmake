@@ -1,6 +1,6 @@
 include(FetchContent)
 set(FETCHCONTENT_QUIET OFF)
-set(FETCHCONTENT_BASE_DIR ${CMAKE_SOURCE_DIR}/_deps)
+set(FETCHCONTENT_BASE_DIR ${PROJECT_SOURCE_DIR}/_deps)
 
 FetchContent_Declare(
     jsonrpc
