@@ -1,20 +1,23 @@
-get_target_property(NLOHMANN_JSON_INCLUDE_DIR nlohmann_json INTERFACE_INCLUDE_DIRECTORIES)
-set(NLOHMANN_JSON_HEADERS
-    ${NLOHMANN_JSON_INCLUDE_DIR}/nlohmann/json.hpp
-    )
+# json
+configure_file(${FETCHCONTENT_BASE_DIR}/json-src/include/nlohmann/json.hpp ${CMAKE_SOURCE_DIR}/include/extern/nlohmann/json.hpp)
 
-install(FILES ${NLOHMANN_JSON_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/nlohmann)
+# simple-websocket-server
+configure_file(${FETCHCONTENT_BASE_DIR}/simple-websocket-server-src/asio_compatibility.hpp ${CMAKE_SOURCE_DIR}/include/extern/simple-websocket-server/asio_compatibility.hpp)
+configure_file(${FETCHCONTENT_BASE_DIR}/simple-websocket-server-src/client_ws.hpp ${CMAKE_SOURCE_DIR}/include/extern/simple-websocket-server/client_ws.hpp)
+configure_file(${FETCHCONTENT_BASE_DIR}/simple-websocket-server-src/crypto.hpp ${CMAKE_SOURCE_DIR}/include/extern/simple-websocket-server/crypto.hpp)
+configure_file(${FETCHCONTENT_BASE_DIR}/simple-websocket-server-src/mutex.hpp ${CMAKE_SOURCE_DIR}/include/extern/simple-websocket-server/mutex.hpp)
+configure_file(${FETCHCONTENT_BASE_DIR}/simple-websocket-server-src/server_ws.hpp ${CMAKE_SOURCE_DIR}/include/extern/simple-websocket-server/server_ws.hpp)
+configure_file(${FETCHCONTENT_BASE_DIR}/simple-websocket-server-src/status_code.hpp ${CMAKE_SOURCE_DIR}/include/extern/simple-websocket-server/status_code.hpp)
+configure_file(${FETCHCONTENT_BASE_DIR}/simple-websocket-server-src/utility.hpp ${CMAKE_SOURCE_DIR}/include/extern/simple-websocket-server/utility.hpp)
 
-get_target_property(SIMPLE_WEBSOCKET_SERVER_INCLUDE_DIR simple-websocket-server INTERFACE_INCLUDE_DIRECTORIES)
-set(SIMPLE_WEBSOCKET_SERVER_HEADERS
-    ${SIMPLE_WEBSOCKET_SERVER_INCLUDE_DIR}/asio_compatibility.hpp
-    ${SIMPLE_WEBSOCKET_SERVER_INCLUDE_DIR}/client_ws.hpp
-    ${SIMPLE_WEBSOCKET_SERVER_INCLUDE_DIR}/crypto.hpp
-    ${SIMPLE_WEBSOCKET_SERVER_INCLUDE_DIR}/mutex.hpp
-    ${SIMPLE_WEBSOCKET_SERVER_INCLUDE_DIR}/server_ws.hpp
-    ${SIMPLE_WEBSOCKET_SERVER_INCLUDE_DIR}/status_code.hpp
-    ${SIMPLE_WEBSOCKET_SERVER_INCLUDE_DIR}/utility.hpp
-    )
+# httplib
+configure_file(${FETCHCONTENT_BASE_DIR}/cpp-httplib-src/httplib.h ${CMAKE_SOURCE_DIR}/include/extern/httplib/httplib.h)
 
-message(${SIMPLE_WEBSOCKET_SERVER_HEADERS})
-install(FILES ${SIMPLE_WEBSOCKET_SERVER_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/simple-websocket-server)
+# jsonrpccxx
+configure_file(${FETCHCONTENT_BASE_DIR}/jsonrpc-src/include/jsonrpccxx/batchclient.hpp ${CMAKE_SOURCE_DIR}/include/extern/jsonrpccxx/batchclient.hpp)
+configure_file(${FETCHCONTENT_BASE_DIR}/jsonrpc-src/include/jsonrpccxx/client.hpp ${CMAKE_SOURCE_DIR}/include/extern/jsonrpccxx/client.hpp)
+configure_file(${FETCHCONTENT_BASE_DIR}/jsonrpc-src/include/jsonrpccxx/common.hpp ${CMAKE_SOURCE_DIR}/include/extern/jsonrpccxx/common.hpp)
+configure_file(${FETCHCONTENT_BASE_DIR}/jsonrpc-src/include/jsonrpccxx/dispatcher.hpp ${CMAKE_SOURCE_DIR}/include/extern/jsonrpccxx/dispatcher.hpp)
+configure_file(${FETCHCONTENT_BASE_DIR}/jsonrpc-src/include/jsonrpccxx/iclientconnector.hpp ${CMAKE_SOURCE_DIR}/include/extern/jsonrpccxx/iclientconnector.hpp)
+configure_file(${FETCHCONTENT_BASE_DIR}/jsonrpc-src/include/jsonrpccxx/server.hpp ${CMAKE_SOURCE_DIR}/include/extern/jsonrpccxx/server.hpp)
+configure_file(${FETCHCONTENT_BASE_DIR}/jsonrpc-src/include/jsonrpccxx/typemapper.hpp ${CMAKE_SOURCE_DIR}/include/extern/jsonrpccxx/typemapper.hpp)

@@ -1,3 +1,7 @@
+include(FetchContent)
+set(FETCHCONTENT_QUIET OFF)
+set(FETCHCONTENT_BASE_DIR ${CMAKE_SOURCE_DIR}/_deps)
+
 FetchContent_Declare(
     jsonrpc
     GIT_REPOSITORY https://github.com/jsonrpcx/json-rpc-cxx.git

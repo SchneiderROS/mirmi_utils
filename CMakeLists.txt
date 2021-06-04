@@ -137,10 +137,9 @@ if(NOT FPING)
     message(FATAL_ERROR "fping not found!")
 endif()
 
-include(FetchContent)
-set(FETCHCONTENT_QUIET OFF)
-set(FETCHCONTENT_BASE_DIR ${CMAKE_SOURCE_DIR}/_deps)
-include(cmake/extern.cmake)
+include(cmake/FetchContent.cmake)
+include(cmake/InstallDeps.cmake)
+
 
 install(TARGETS project_options EXPORT ProjectOptionsTargets)
 install(TARGETS project_warnings EXPORT ProjectWarningsTargets)
@@ -157,9 +156,6 @@ install(EXPORT ProjectWarningsTargets
     )
 
 add_subdirectory(src)
-
-include(cmake/InstallDeps.cmake)
-
 
 message(STATUS "Generating install")
 set(project_config_in "${CMAKE_CURRENT_LIST_DIR}/cmake/${PROJECT_NAME}Config.cmake.in")
