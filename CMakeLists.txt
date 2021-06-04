@@ -138,8 +138,6 @@ if(NOT FPING)
 endif()
 
 include(cmake/FetchContent.cmake)
-include(cmake/InstallDeps.cmake)
-
 
 add_library(${PROJECT_NAME}::project_options ALIAS project_options)
 add_library(${PROJECT_NAME}::project_warnings ALIAS project_warnings)
@@ -189,30 +187,6 @@ install(FILES "${project_config_out}" "${version_config_file}" DESTINATION "${ex
 # Support creation of installable packages
 # ---------------------------------------------------------------------------------------
 include(cmake/${PROJECT_NAME}CPack.cmake)
-
-# Set global flags only if this is the main project
-#if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-#    set(CMAKE_CXX_FLAGS_DEBUG "-g")
-#    set(CMAKE_CXX_FLAGS_RELEASE "-O3")
-#    set(CMAKE_CXX_STANDARD 17)
-#    set(CMAKE_CXX_STANDARD_REQUIRED ON)
-#    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-#    set(CMAKE_DEBUG_POSTFIX _dbg)
-#    set(CMAKE_EXPORT_COMPILE_COMMANDS On)
-#    set(CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/../extern/lib/cmake)
-#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=return-type -Werror=uninitialized -Wno-error=deprecated-declarations -Wno-error=unused-result")
-
-#    set(CMAKE_CXX_EXTENSIONS OFF)
-#    set(CMAKE_VERBOSE_MAKEFILE ON)
-
-#    add_compile_options(-std=c++17)
-#    if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-#        add_compile_options(-Wthread-safety)
-#    endif()
-
-
-#endif()
-
 
 message("#########################################")
     message("\t \t Summary")
