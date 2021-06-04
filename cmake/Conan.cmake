@@ -17,5 +17,5 @@ conan_cmake_run(
     missing
     )
 
-include(${CMAKE_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE}/conanbuildinfo.cmake)
+include(${PROJECT_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
