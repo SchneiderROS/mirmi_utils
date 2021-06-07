@@ -4,8 +4,6 @@ set(${MODULE_NAME}_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/src/json.cpp
     )
 
-#find_package(nlohmann_json REQUIRED)
-
 set(${MODULE_NAME}_HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/${MODULE_NAME}/json.hpp
     )
@@ -40,6 +38,13 @@ target_link_libraries(${MODULE_NAME}
     ${PROJECT_NAME}_project_warnings
 #    $<BUILD_INTERFACE:nlohmann_json::nlohmann_json>
     )
+
+#conan_target_link_libraries(${MODULE_NAME}
+#    PRIVATE
+#    ${PROJECT_NAME}_project_options
+#    ${PROJECT_NAME}_project_warnings
+#    CONAN_LIB::nlohmann_json_nlohmann_json
+#    )
 
 
 set_target_properties(${MODULE_NAME} PROPERTIES PUBLIC_HEADER "${${MODULE_NAME}_HEADER_FILES}")

@@ -12,10 +12,11 @@ conan_cmake_run(
     BASIC_SETUP
     CONAN_COMMAND
     ${CONAN_CMD}
-    CMAKE_TARGETS
+    #CMAKE_TARGETS
     BUILD
     missing
     )
 
 include(${PROJECT_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
+conan_basic_setup(TARGETS)
+#conan_basic_setup(TARGETS benchmarking conversion files json network math system)
