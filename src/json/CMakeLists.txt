@@ -36,32 +36,10 @@ target_link_libraries(${MODULE_NAME}
     PRIVATE
     ${PROJECT_NAME}_project_options
     ${PROJECT_NAME}_project_warnings
-#    $<BUILD_INTERFACE:nlohmann_json::nlohmann_json>
     )
-
-#conan_target_link_libraries(${MODULE_NAME}
-#    PRIVATE
-#    ${PROJECT_NAME}_project_options
-#    ${PROJECT_NAME}_project_warnings
-#    CONAN_LIB::nlohmann_json_nlohmann_json
-#    )
 
 
 set_target_properties(${MODULE_NAME} PROPERTIES PUBLIC_HEADER "${${MODULE_NAME}_HEADER_FILES}")
 set_target_properties(${MODULE_NAME} PROPERTIES PUBLIC_HEADER "${NLOHMANN_JSON_HEADERS}")
 
 apply_module_options(${MODULE_NAME})
-
-#install(TARGETS ${MODULE_NAME} EXPORT ${MODULE_NAME}Targets
-#    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/${MODULE_NAME}
-#    RUNTIME DESTINATION       ${CMAKE_INSTALL_BINDIR}
-#    LIBRARY DESTINATION       ${CMAKE_INSTALL_LIBDIR}
-#    INCLUDES DESTINATION      ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/${MODULE_NAME}
-#    ARCHIVE DESTINATION       ${CMAKE_INSTALL_SHAREDSTATEDIR}
-#    )
-
-#install(EXPORT ${MODULE_NAME}Targets
-#    FILE ${MODULE_NAME}Targets.cmake
-#    NAMESPACE ${PROJECT_NAME}::${MODULE_NAME}::
-#    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${MODULE_NAME}
-#    )

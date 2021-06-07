@@ -39,8 +39,6 @@ target_link_libraries(${MODULE_NAME}
     ${PROJECT_NAME}::files
     PUBLIC
     $<BUILD_INTERFACE:json-rpc-cxx>
-#    $<BUILD_INTERFACE:nlohmann_json::nlohmann_json>
-    $<BUILD_INTERFACE:simple-websocket-server>
     $<BUILD_INTERFACE:httplib>
     )
 
