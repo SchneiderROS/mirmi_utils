@@ -31,10 +31,13 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 include(cmake/ApplyModuleOptions.cmake)
-include(cmake/Conan.cmake)
 include(cmake/Doxygen.cmake)
 include(cmake/PreventInSourceBuilds.cmake)
 include(cmake/StaticAnalyzers.cmake)
+
+if(${CMAKE_PROJECT_NAME} MATCHES ${PROJECT_NAME})
+    include(cmake/Conan.cmake)
+endif()
 
 AssureOutOfSourceBuilds()
 
