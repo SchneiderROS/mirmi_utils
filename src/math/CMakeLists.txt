@@ -34,8 +34,8 @@ target_include_directories(${MODULE_NAME}
 
 target_link_libraries(${MODULE_NAME}
     PRIVATE
-    project_options
-    project_warnings
+    ${PROJECT_NAME}_project_options
+    ${PROJECT_NAME}_project_warnings
     PUBLIC
     )
 

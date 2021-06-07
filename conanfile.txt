@@ -2,6 +2,8 @@
 boost/1.76.0
 eigen/3.3.9
 catch2/2.13.6
+nlohmann_json/3.9.1
 
 [generators]
 cmake
+cmake_find_package

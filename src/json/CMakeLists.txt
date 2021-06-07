@@ -4,6 +4,7 @@ set(${MODULE_NAME}_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/src/json.cpp
     )
 
+#find_package(nlohmann_json REQUIRED)
 
 set(${MODULE_NAME}_HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/${MODULE_NAME}/json.hpp
@@ -35,9 +36,9 @@ target_include_directories(${MODULE_NAME}
 
 target_link_libraries(${MODULE_NAME}
     PRIVATE
-    project_options
-    project_warnings
-    $<BUILD_INTERFACE:nlohmann_json::nlohmann_json>
+    ${PROJECT_NAME}_project_options
+    ${PROJECT_NAME}_project_warnings
+#    $<BUILD_INTERFACE:nlohmann_json::nlohmann_json>
     )
 
 

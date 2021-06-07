@@ -61,22 +61,22 @@ option(ENABLE_IPO "Enable Interprocedural Optimization, aka Link Time Optimizati
 option(ENABLE_PCH "Enable Precompiled Headers" ON)
 option(ENABLE_UNITY_BUILD "Enable unity build" ON)
 
-add_library(project_warnings INTERFACE)
-add_library(project_options INTERFACE)
+add_library(${PROJECT_NAME}_project_warnings INTERFACE)
+add_library(${PROJECT_NAME}_project_options INTERFACE)
 
-target_compile_features(project_options
+target_compile_features(${PROJECT_NAME}_project_options
     INTERFACE
     cxx_std_17)
 
 if(ENABLE_PCH)
     target_precompile_headers(
-        project_options
+        ${PROJECT_NAME}_project_options
         INTERFACE
         ${CMAKE_SOURCE_DIR}/include/commons/pch.hpp
         )
 endif()
 
-target_compile_options(project_warnings
+target_compile_options(${PROJECT_NAME}_project_warnings
     INTERFACE
     #    -Wall
     #    -Wextra
@@ -97,32 +97,32 @@ target_compile_options(project_warnings
     )
 
 if(ONLY_COVERAGE OR ENABLE_COVERAGE)
-    target_compile_options(project_options INTERFACE --coverage -O0 -g)
-    target_link_libraries(project_options INTERFACE --coverage)
+    target_compile_options(${PROJECT_NAME}_project_options INTERFACE --coverage -O0 -g)
+    target_link_libraries(${PROJECT_NAME}_project_options INTERFACE --coverage)
 endif()
 
 if(ENABLE_ASAN)
-    target_compile_options(project_options INTERFACE -fsanitize=address)
-    target_link_libraries(project_options INTERFACE -fsanitize=address)
+    target_compile_options(${PROJECT_NAME}_project_options INTERFACE -fsanitize=address)
+    target_link_libraries(${PROJECT_NAME}_project_options INTERFACE -fsanitize=address)
 endif()
 
 # some GCC specific warnings. These flags are added only if the used compiler is GCC.
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    target_compile_options(project_warnings
+    target_compile_options(${PROJECT_NAME}_project_warnings
         INTERFACE
         #        -Wmisleading-indentation
         #        -Wduplicated-cond
         #        -Wlogical-op
         #        -Wuseless-cast
         )
-    target_link_libraries(project_options INTERFACE stdc++fs)
+    target_link_libraries(${PROJECT_NAME}_project_options INTERFACE stdc++fs)
 endif()
 
 if (${FORCE_COLORED_OUTPUT})
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-        target_compile_options (project_options INTERFACE -fdiagnostics-color=always)
+        target_compile_options (${PROJECT_NAME}_project_options INTERFACE -fdiagnostics-color=always)
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-        target_compile_options (project_options INTERFACE -fcolor-diagnostics)
+        target_compile_options (${PROJECT_NAME}_project_options INTERFACE -fcolor-diagnostics)
     endif ()
 endif ()
 
@@ -141,11 +141,11 @@ endif()
 
 include(cmake/FetchContent.cmake)
 
-add_library(${PROJECT_NAME}::project_options ALIAS project_options)
-add_library(${PROJECT_NAME}::project_warnings ALIAS project_warnings)
+add_library(${PROJECT_NAME}::${PROJECT_NAME}_project_options ALIAS ${PROJECT_NAME}_project_options)
+add_library(${PROJECT_NAME}::${PROJECT_NAME}_project_warnings ALIAS ${PROJECT_NAME}_project_warnings)
 
-#install(TARGETS project_options EXPORT ProjectOptionsTargets)
-#install(TARGETS project_warnings EXPORT ProjectWarningsTargets)
+#install(TARGETS ${PROJECT_NAME}_project_options EXPORT ProjectOptionsTargets)
+#install(TARGETS ${PROJECT_NAME}_project_warnings EXPORT ProjectWarningsTargets)
 
 #install(EXPORT ProjectOptionsTargets
 #    FILE ProjectOptionsTargets.cmake
@@ -163,7 +163,7 @@ add_subdirectory(src)
 get_target_property(HEADER_OUT benchmarking PUBLIC_HEADER)
 message(${HEADER_OUT})
 
-install(TARGETS benchmarking conversion files json math network system project_options project_warnings EXPORT ${PROJECT_NAME}Targets
+install(TARGETS benchmarking conversion files json math network system ${PROJECT_NAME}_project_options ${PROJECT_NAME}_project_warnings EXPORT ${PROJECT_NAME}Targets
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
     RUNTIME DESTINATION       ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION       ${CMAKE_INSTALL_LIBDIR}

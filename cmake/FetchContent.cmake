@@ -1,6 +1,6 @@
 include(FetchContent)
 set(FETCHCONTENT_QUIET OFF)
-set(FETCHCONTENT_BASE_DIR ${PROJECT_SOURCE_DIR}/_deps)
+set(FETCHCONTENT_BASE_DIR ${CMAKE_SOURCE_DIR}/_deps)
 
 FetchContent_Declare(
     jsonrpc
@@ -10,10 +10,10 @@ FetchContent_Declare(
 set(COMPILE_TESTS OFF CACHE INTERNAL "Build SHARED libraries")
 set(COMPILE_EXAMPLES OFF CACHE INTERNAL "Build SHARED libraries")
 
-FetchContent_Declare(
-    json
-    GIT_REPOSITORY https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent.git
-    GIT_TAG v3.9.1)
+#FetchContent_Declare(
+#    json
+#    GIT_REPOSITORY https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent.git
+#    GIT_TAG v3.9.1)
 
 FetchContent_Declare(
     simple-websocket-server
@@ -25,5 +25,5 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
     GIT_TAG v0.8.9)
 
-FetchContent_MakeAvailable(jsonrpc json simple-websocket-server cpp-httplib)
+FetchContent_MakeAvailable(jsonrpc simple-websocket-server cpp-httplib)
 
