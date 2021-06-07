@@ -10,10 +10,5 @@ FetchContent_Declare(
 set(COMPILE_TESTS OFF CACHE INTERNAL "Build SHARED libraries")
 set(COMPILE_EXAMPLES OFF CACHE INTERNAL "Build SHARED libraries")
 
-FetchContent_Declare(
-    cpp-httplib
-    GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
-    GIT_TAG v0.8.9)
-
-FetchContent_MakeAvailable(jsonrpc cpp-httplib)
+FetchContent_MakeAvailable(jsonrpc)
 

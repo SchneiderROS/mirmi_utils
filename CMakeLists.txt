@@ -93,8 +93,8 @@ target_compile_options(${PROJECT_NAME}_project_warnings
     #    -Wconversion
     -Wsign-conversion
     -Wnull-dereference
-    #    -Wdouble-promotion
-    #    -Wformat=2
+    -Wdouble-promotion
+    -Wformat=2
     -Wreturn-type
     -Wuninitialized
     )

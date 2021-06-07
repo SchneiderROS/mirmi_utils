@@ -9,7 +9,6 @@
 #include <math.h>
 
 #include "eigen3/Eigen/Core"
-//#include "eigen3/Eigen/Dense"
 
 namespace msrm_utils {
 
