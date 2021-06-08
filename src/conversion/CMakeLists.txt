@@ -37,6 +37,7 @@ target_link_libraries(${MODULE_NAME}
     ${PROJECT_NAME}_project_options
     ${PROJECT_NAME}_project_warnings
     PUBLIC
+    CONAN_PKG::eigen
     )
 
 set_target_properties(${MODULE_NAME} PROPERTIES PUBLIC_HEADER "${${MODULE_NAME}_HEADER_FILES}")

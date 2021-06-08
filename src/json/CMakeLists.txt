@@ -36,6 +36,7 @@ target_link_libraries(${MODULE_NAME}
     PRIVATE
     ${PROJECT_NAME}_project_options
     ${PROJECT_NAME}_project_warnings
+    PUBLIC
     $<BUILD_INTERFACE:CONAN_PKG::eigen>
     $<BUILD_INTERFACE:CONAN_PKG::nlohmann_json>
     )
