@@ -230,98 +230,100 @@ std::string convert_ip_from_default_format(const std::string& ip){
     return ip_in_format;
 }
 
-//JsonRPCServer::JsonRPCServer(const std::string& address, unsigned port) : m_address(address.c_str()), m_port(port) {
-//    m_http_server.Post("/", [&](const httplib::Request &req, httplib::Response &res) {
-//        res.status = 200;
-//        //        std::cout<<"REQUEST: "<<req.body<<std::endl;
-//        res.set_content(m_server.HandleRequest(req.body), "application/json");
-//        //        std::cout<<"RESPONSE: "<<res.body<<std::endl;
-//    });
-//}
+/*
+JsonRPCServer::JsonRPCServer(const std::string& address, unsigned port) : m_address(address.c_str()), m_port(port) {
+    m_http_server.Post("/", [&](const httplib::Request &req, httplib::Response &res) {
+        res.status = 200;
+        //        std::cout<<"REQUEST: "<<req.body<<std::endl;
+        res.set_content(m_server.HandleRequest(req.body), "application/json");
+        //        std::cout<<"RESPONSE: "<<res.body<<std::endl;
+    });
+}
 
-//JsonRPCServer::~JsonRPCServer(){
-//    this->stop_listening();
-//}
+JsonRPCServer::~JsonRPCServer(){
+    this->stop_listening();
+}
 
-//bool JsonRPCServer::start_listening(){
-//    if(m_port>65535){
-//        std::cout<<"Port number must be between 0 and 65535"<<std::endl;
-//        return false;
-//    }
-//    if (m_http_server.is_running())
-//        return false;
-//    if(!m_http_server.bind_to_port(m_address.c_str(),m_port,2)){
-//        return false;
-//    }
-//    m_server_thread = std::thread([this]() { m_http_server.listen_after_bind(); });
-//    std::chrono::time_point t_start = std::chrono::system_clock::now();
-//    while(!m_http_server.is_running()){
-//        std::chrono::time_point t_now = std::chrono::system_clock::now();
-//        double t = std::chrono::duration_cast<std::chrono::seconds>(t_now-t_start).count();
-//        if(t>5){
-//            return false;
-//        }
-//    }
-//    return true;
-//}
+bool JsonRPCServer::start_listening(){
+    if(m_port>65535){
+        std::cout<<"Port number must be between 0 and 65535"<<std::endl;
+        return false;
+    }
+    if (m_http_server.is_running())
+        return false;
+    if(!m_http_server.bind_to_port(m_address.c_str(),m_port,2)){
+        return false;
+    }
+    m_server_thread = std::thread([this]() { m_http_server.listen_after_bind(); });
+    std::chrono::time_point t_start = std::chrono::system_clock::now();
+    while(!m_http_server.is_running()){
+        std::chrono::time_point t_now = std::chrono::system_clock::now();
+        double t = std::chrono::duration_cast<std::chrono::seconds>(t_now-t_start).count();
+        if(t>5){
+            return false;
+        }
+    }
+    return true;
+}
 
-//void JsonRPCServer::stop_listening(){
-//    if (m_http_server.is_running()) {
-//        m_http_server.stop();
-//        if(m_server_thread.joinable()){
-//            m_server_thread.join();
-//        }
-//    }
-//}
+void JsonRPCServer::stop_listening(){
+    if (m_http_server.is_running()) {
+        m_http_server.stop();
+        if(m_server_thread.joinable()){
+            m_server_thread.join();
+        }
+    }
+}
 
-//bool JsonRPCServer::bind_method(const std::string &name, std::function<nlohmann::json (const nlohmann::json &)> method, const std::vector<ArgPair> &arguments){
-//    std::vector<std::string> arguments_only;
-//    for(const auto& arg : arguments){
-//        arguments_only.emplace_back(arg.argument);
-//    }
-//    return m_server.Add(name,jsonrpccxx::MethodHandle(method),arguments_only);
-//}
+bool JsonRPCServer::bind_method(const std::string &name, std::function<nlohmann::json (const nlohmann::json &)> method, const std::vector<ArgPair> &arguments){
+    std::vector<std::string> arguments_only;
+    for(const auto& arg : arguments){
+        arguments_only.emplace_back(arg.argument);
+    }
+    return m_server.Add(name,jsonrpccxx::MethodHandle(method),arguments_only);
+}
 
-//JsonRPCClient::JsonRPCClient(const char* host, int port, double timeout) : m_rpc_client(*this,jsonrpccxx::version::v2),m_http_client(host, port),m_timeout(timeout) {
-//    m_http_client.set_connection_timeout(timeout);
-//}
+JsonRPCClient::JsonRPCClient(const char* host, int port, double timeout) : m_rpc_client(*this,jsonrpccxx::version::v2),m_http_client(host, port),m_timeout(timeout) {
+    m_http_client.set_connection_timeout(timeout);
+}
 
-//JsonRPCClient::~JsonRPCClient(){
-//    m_http_client.stop();
-//}
+JsonRPCClient::~JsonRPCClient(){
+    m_http_client.stop();
+}
 
-//std::string JsonRPCClient::Send(const std::string &request){
-//    m_http_client.set_connection_timeout(m_timeout);
-//    auto res = m_http_client.Post("/", request, "application/json");
-//    if (!res || res->status != 200) {
-//        throw jsonrpccxx::JsonRpcException(-32003, "client connector error, received status != 200");
-//    }
-//    return res->body;
-//}
+std::string JsonRPCClient::Send(const std::string &request){
+    m_http_client.set_connection_timeout(m_timeout);
+    auto res = m_http_client.Post("/", request, "application/json");
+    if (!res || res->status != 200) {
+        throw jsonrpccxx::JsonRpcException(-32003, "client connector error, received status != 200");
+    }
+    return res->body;
+}
 
-//bool JsonRPCClient::send(const std::string &method, const nlohmann::json &request){
-//    try{
-//        m_response = m_rpc_client.CallMethod<nlohmann::json>(0,method,{request});
-//        return true;
-//    }catch(const nlohmann::json::exception& e){
-//        std::cout<<e.what()<<std::endl;
-//        return false;
-//    }catch(const jsonrpccxx::JsonRpcException& e){
-//        std::cout<<e.what()<<std::endl;
-//        return false;
-//    }
-//}
+bool JsonRPCClient::send(const std::string &method, const nlohmann::json &request){
+    try{
+        m_response = m_rpc_client.CallMethod<nlohmann::json>(0,method,{request});
+        return true;
+    }catch(const nlohmann::json::exception& e){
+        std::cout<<e.what()<<std::endl;
+        return false;
+    }catch(const jsonrpccxx::JsonRpcException& e){
+        std::cout<<e.what()<<std::endl;
+        return false;
+    }
+}
 
-//void JsonRPCClient::get_response(nlohmann::json &response){
-//    response=m_response;
-//}
+void JsonRPCClient::get_response(nlohmann::json &response){
+    response=m_response;
+}
 
-//bool JsonRPCClient::call_method(const std::string &address, unsigned port, const std::string &method, const nlohmann::json &request, nlohmann::json &response, unsigned timeout){
-//    JsonRPCClient client(address.c_str(),port,timeout);
-//    bool result = client.send(method,request);
-//    client.get_response(response);
-//    return result;
-//}
+bool JsonRPCClient::call_method(const std::string &address, unsigned port, const std::string &method, const nlohmann::json &request, nlohmann::json &response, unsigned timeout){
+    JsonRPCClient client(address.c_str(),port,timeout);
+    bool result = client.send(method,request);
+    client.get_response(response);
+    return result;
+}
+//*/
 
 JsonWebsocketServer::JsonWebsocketServer(const std::string& address, unsigned port, const std::string& endpoint){
     m_server.config.address=address;
@@ -450,7 +452,7 @@ bool JsonWebsocketServer::bind_method(const std::string &name, std::function<nlo
         return false;
     }
     m_method_callbacks.insert(std::make_pair(name, method));
-    m_method_arguments.insert(std::make_pair(name,arguments));
+    m_method_arguments.insert(std::make_pair(name, arguments));
     return true;
 }
 
@@ -735,8 +737,9 @@ JsonUDPClient::~JsonUDPClient(){
 bool JsonUDPClient::send(const std::string &method, const nlohmann::json &request){
     m_buffer_size=4096;
     m_slen=sizeof(m_si_other);
-    if ((m_socket=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) // If socket for outgoing connection could not be created...
-    {
+
+    if ((m_socket=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
+        // If socket for outgoing connection could not be created...
         std::cout<<"Could not create socket: "<<std::strerror(errno)<<std::endl;
         return false;
     }
@@ -763,6 +766,8 @@ bool JsonUDPClient::send(const std::string &method, const nlohmann::json &reques
     msg_json["request"]=request;
     std::string payload = msg_json.dump();
     const char* msg = payload.c_str();
+    // TODO: Should MSG_CONFIRM be set when coming from call_method? https://stackoverflow.com/a/42105469/6456598
+    //       "If you're sending an initial request ... you should *not* set the MSG_CONFIRM flag"
     int result = sendto(m_socket, msg, strlen(msg), MSG_CONFIRM, (struct sockaddr *) &m_si_other, m_slen);
     if(result<0){
         std::cout<<"Could not send message: "<<std::strerror(errno)<<std::endl;
@@ -890,13 +895,14 @@ bool UDPStreamSender::send(const std::vector<double>& payload){
     return true;
 }
 
-bool UDPStreamSender::send(const std::string &payload){
+bool UDPStreamSender::send(const std::string &payload, bool sendWithTerminatingNullCharacter){
     const char* msg = payload.c_str();
+    int messageLength = strlen(msg) + sendWithTerminatingNullCharacter;
 
     // The message is sent out to the peer robot.
-    int err=sendto(m_socket, msg, strlen(msg) , 0 , (struct sockaddr *) &m_si_other, m_slen)<0;
-    if(err<0){ // If an error occured during sending...
-        std::cout<<"Could not send message: "<<std::strerror(errno)<<std::endl;
+    int err = sendto(m_socket, msg, messageLength, 0 , (struct sockaddr *) &m_si_other, m_slen) < 0;
+    if (err < 0) { // If an error occurred during sending...
+        std::cout << "Could not send message: " << std::strerror(errno) << std::endl;
         return false;
     }
     return true;
