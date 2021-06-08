@@ -45,7 +45,6 @@ configure_file (
     "${PROJECT_SOURCE_DIR}/include/commons/config.hpp.in"
     "${PROJECT_BINARY_DIR}/include/commons/config.hpp"
     )
-include_directories("${PROJECT_BINARY_DIR}/src/include")
 
 option(ONLY_COVERAGE "Build only tests necessary for coverage" ON)
 option(LIBCPP "Build with libc++" ON)
@@ -66,6 +65,11 @@ option(ENABLE_UNITY_BUILD "Enable unity build" ON)
 
 add_library(${PROJECT_NAME}_project_warnings INTERFACE)
 add_library(${PROJECT_NAME}_project_options INTERFACE)
+
+target_include_directories(${PROJECT_NAME}_project_options
+    INTERFACE
+    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src/include>
+    )
 
 target_compile_features(${PROJECT_NAME}_project_options
     INTERFACE
