@@ -35,7 +35,7 @@ include(cmake/Doxygen.cmake)
 include(cmake/PreventInSourceBuilds.cmake)
 include(cmake/StaticAnalyzers.cmake)
 
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+if(NOT CONAN_INCLUDE_DIRS)
     include(cmake/Conan.cmake)
 endif()
 
