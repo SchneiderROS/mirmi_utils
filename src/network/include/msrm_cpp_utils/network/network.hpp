@@ -96,7 +96,7 @@ std::string convert_ip_to_default_format(const std::string &ip);
 std::string convert_ip_from_default_format(const std::string &ip);
 
 struct ArgPair{
-    ArgPair(std::string argument, std::optional<nlohmann::json> default_value):argument(argument),default_value(default_value){
+    ArgPair(std::string argument_in, std::optional<nlohmann::json> default_value_in):argument(argument_in),default_value(default_value_in){
 
     }
     const std::string argument;
@@ -106,6 +106,7 @@ struct ArgPair{
 /*! Interface for json method servers */
 class IJsonMethodServer{
 public:
+    virtual ~IJsonMethodServer() = default;
     /**
      * @brief start_listening When calling this method the server should start listening.
      * @return Should return true if server start was succesful, false otherwise
@@ -331,7 +332,6 @@ public:
 private:
 
     void listen();
-    int get_first_byte(char *msg);
     std::string read_message(const std::string& msg);
     std::string call_method(nlohmann::json &message);
     bool check_if_method_exists(const std::string& method);

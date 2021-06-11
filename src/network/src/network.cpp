@@ -20,7 +20,7 @@ bool ping(const char *ipaddr) {
     FILE *fp;
     int stat = 0;
     //  asprintf (&command, "%s %s -q 2>&1", "fping", ipaddr);
-    int rtn = asprintf (&command, "%s %s -q -r 0 -t 5 2>&1", "fping", ipaddr);
+    [[maybe_unused]] int rtn = asprintf (&command, "%s %s -q -r 0 -t 5 2>&1", "fping", ipaddr);
     //    printf("%s\n",command);
     fp = popen(command, "r");
     if (fp == NULL) {
@@ -376,12 +376,12 @@ JsonWebsocketServer::JsonWebsocketServer(const std::string& address, unsigned po
         });
     };
 
-    echo.on_open = [](std::shared_ptr<SimpleWeb::SocketServer<SimpleWeb::WS>::Connection> connection) {
+    echo.on_open = []([[maybe_unused]] std::shared_ptr<SimpleWeb::SocketServer<SimpleWeb::WS>::Connection> connection) {
         //        std::cout << "Server: Opened connection " << connection.get() << std::endl;
     };
 
     // See RFC 6455 7.4.1. for status codes
-    echo.on_close = [](std::shared_ptr<SimpleWeb::SocketServer<SimpleWeb::WS>::Connection> connection, int status, const std::string & /*reason*/) {
+    echo.on_close = []([[maybe_unused]] std::shared_ptr<SimpleWeb::SocketServer<SimpleWeb::WS>::Connection> connection, [[maybe_unused]] int status, const std::string & /*reason*/) {
         //        std::cout << "Server: Closed connection " << connection.get() << " with status code " << status << std::endl;
     };
 
@@ -488,7 +488,7 @@ JsonWebsocketClient::JsonWebsocketClient(const std::string& address, unsigned po
         connection->send_close(1000);
     };
 
-    m_client.on_close = [](std::shared_ptr<SimpleWeb::SocketClient<SimpleWeb::WS>::Connection> /*connection*/, int status, const std::string & /*reason*/) {
+    m_client.on_close = [](std::shared_ptr<SimpleWeb::SocketClient<SimpleWeb::WS>::Connection> /*connection*/, [[maybe_unused]] int status, const std::string & /*reason*/) {
     };
 
     // See http://www.boost.org/doc/libs/1_55_0/doc/html/boost_asio/reference.html, Error Codes for error code meanings
@@ -579,7 +579,7 @@ bool JsonUDPServer::start_listening(){
 
     memset((char *) &m_si_me, 0, sizeof(m_si_me));
     m_si_me.sin_family = AF_INET;
-    m_si_me.sin_port = htons(m_port);
+    m_si_me.sin_port = htons(static_cast<uint16_t>(m_port));
     m_si_me.sin_addr.s_addr=htonl (INADDR_ANY);
     if(bind(m_socket , (struct sockaddr*)&m_si_me, sizeof(m_si_me)) == -1){
         std::cout<<"Could not bind socket: "<<std::strerror(errno)<<std::endl;
@@ -656,24 +656,6 @@ std::string JsonUDPServer::call_method(nlohmann::json &message){
         response["result"]=e.what();
     }
     return response.dump();
-}
-
-int JsonUDPServer::get_first_byte(char* msg){
-    int i=0;
-    unsigned payload_size=0;
-    for(i;i<m_buffer_size;i++){ // For every element in the message
-        if(msg[i]==127 && msg[i+1]==127 && msg[i+2]==127 && msg[i+3]==127){ // If start bytes have been found...
-            payload_size=(unsigned)msg[i+m_header_size]; // Read payload size
-            if(msg[i+payload_size+m_header_size-4]==126 && msg[i+payload_size+m_header_size-3]==126 && msg[i+payload_size+m_header_size-2]==126 && msg[i+payload_size+m_header_size-1]==126){ // If end bytes have been found in accordance with the payload size
-                break;
-            }
-        }
-    }
-    if(i<m_buffer_size-m_header_size-payload_size){
-        return i;
-    }else{
-        return -1;
-    }
 }
 
 bool JsonUDPServer::bind_method(const std::string& name, std::function<nlohmann::json(const nlohmann::json& request)> method, const std::vector<ArgPair> &arguments){
@@ -775,7 +757,7 @@ bool JsonUDPClient::send(const std::string &method, const nlohmann::json &reques
     }
     char buf[m_buffer_size];
     memset(&buf[0], 0, sizeof(buf));
-    int reclen = recvfrom(m_socket, (char *)buf, m_buffer_size, MSG_WAITALL, (struct sockaddr *) &m_si_other,&m_slen);
+    int reclen = recvfrom(m_socket, static_cast<char *>(buf), m_buffer_size, MSG_WAITALL, (struct sockaddr *) &m_si_other,&m_slen);
     if(reclen<0){
         return false;
     }

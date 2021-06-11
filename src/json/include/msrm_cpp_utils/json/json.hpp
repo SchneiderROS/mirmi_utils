@@ -18,7 +18,7 @@ namespace msrm_utils {
  * @param[in] param Eigen::Matrix value that is appended to the json value.
  * @return True if operation is successful, false otherwise.
  */
-template<typename T, std::size_t S1,std::size_t S2> bool append_json_array(nlohmann::json& paramJ, const Eigen::Matrix<T,S1,S2>& param){
+template<typename T, int S1,int S2> bool append_json_array(nlohmann::json& paramJ, const Eigen::Matrix<T,S1,S2>& param){
     try{
         for(unsigned i=0;i<param.cols();i++){
             for(unsigned j=0;j<param.rows();j++){
@@ -56,7 +56,7 @@ template<typename T, std::size_t S> bool append_json_array(nlohmann::json& param
  * @param[in] param Eigen::Matrix value that is converted to a json value.
  * @return True if operation is successful, false otherwise.
  */
-template<typename T, std::size_t S1,std::size_t S2> bool write_json_array(nlohmann::json& paramJ, const Eigen::Matrix<T,S1,S2>& param){
+template<typename T, int S1,int S2> bool write_json_array(nlohmann::json& paramJ, const Eigen::Matrix<T,S1,S2>& param){
     paramJ.clear();
     try{
         for(unsigned i=0;i<param.cols();i++){
@@ -160,7 +160,7 @@ template<typename T> std::optional<T> from_json(const nlohmann::json& paramJ, co
  * @param param Target Eigen::Matrix type. Has to be of matching size with the json value.
  * @return True if operation is successful, false otherwise.
  */
-template<typename T,std::size_t S1,std::size_t S2> bool read_json_param(const nlohmann::json& paramJ, Eigen::Matrix<T,S1,S2>& param){
+template<typename T,int S1,int S2> bool read_json_param(const nlohmann::json& paramJ, Eigen::Matrix<T,S1,S2>& param){
     try{
         if(!paramJ.is_array()){
             return false;
@@ -170,7 +170,7 @@ template<typename T,std::size_t S1,std::size_t S2> bool read_json_param(const nl
         }
         for(unsigned i=0;i<param.cols();i++){
             for(unsigned j=0;j<param.rows();j++){
-                paramJ[i*(unsigned)param.rows()+j].get_to(param(j,i));
+                paramJ[i*static_cast<unsigned>(param.rows())+j].get_to(param(j,i));
             }
         }
     }catch(const nlohmann::detail::parse_error& e){
@@ -189,7 +189,7 @@ template<typename T,std::size_t S1,std::size_t S2> bool read_json_param(const nl
  * @param param Target Eigen::Matrix type. Has to be of matching size with the json value.
  * @return True if operation is successful, false otherwise.
  */
-template<typename T,std::size_t S1,std::size_t S2> bool read_json_param(const nlohmann::json& paramJ, const char* key, Eigen::Matrix<T,S1,S2>& param){
+template<typename T,int S1,int S2> bool read_json_param(const nlohmann::json& paramJ, const char* key, Eigen::Matrix<T,S1,S2>& param){
     try{
         if(!paramJ.contains(key)){
             return false;
@@ -204,7 +204,7 @@ template<typename T,std::size_t S1,std::size_t S2> bool read_json_param(const nl
         }
         for(unsigned i=0;i<param.cols();i++){
             for(unsigned j=0;j<param.rows();j++){
-                paramJ[key][i*(unsigned)param.rows()+j].get_to(param(j,i));
+                paramJ[key][i*static_cast<unsigned>(param.rows())+j].get_to(param(j,i));
             }
         }
     }catch(const nlohmann::detail::parse_error& e){
@@ -245,7 +245,7 @@ template<typename T> bool read_json_param(const nlohmann::json& paramJ, const ch
     return true;
 }
 
-template<typename T, size_t S1,size_t S2> nlohmann::json from_eigen(const Eigen::Matrix<T,S1,S2> eigen_object,bool column_major=true){
+template<typename T, int S1,int S2> nlohmann::json from_eigen(const Eigen::Matrix<T,S1,S2> eigen_object,bool column_major=true){
     nlohmann::json json_array;
     if(column_major){
         for(unsigned i=0;i<S2;i++){

@@ -14,7 +14,7 @@ void write_endl_to_file(const std::string& file){
 }
 
 void get_current_directory(char* path) {
-    char* rtn = getcwd( path, FILENAME_MAX );
+    [[maybe_unused]] char* rtn = getcwd( path, FILENAME_MAX );
 }
 
 bool check_if_file_exists(const char *file){

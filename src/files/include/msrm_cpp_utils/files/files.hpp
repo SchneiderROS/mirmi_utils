@@ -127,7 +127,7 @@ std::vector<std::string> split_string(std::string s, const std::string& delimite
  * @param[in] h Step parameter for recursive call.
  * @return Int value that corresponds to the given character sequence.
  */
-constexpr unsigned int str_to_int(const char* str, int h=0){
+constexpr unsigned str_to_int(const char* str, unsigned h=0){
     return !str[h] ? 5381 : (str_to_int(str, h+1) * 33) ^ str[h];
 }
 

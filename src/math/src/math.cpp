@@ -102,7 +102,7 @@ bool is_orthonormal(Eigen::Matrix<double, 3, 3> M){
 
 double fRand(double fMin, double fMax)
 {
-    double f = (double)rand() / RAND_MAX;
+    double f = static_cast<double>(rand()) / RAND_MAX;
     return fMin + f * (fMax - fMin);
 }
 

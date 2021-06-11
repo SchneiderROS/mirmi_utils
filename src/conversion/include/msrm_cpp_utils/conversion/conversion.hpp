@@ -15,7 +15,7 @@ namespace msrm_utils {
  * @param[in] m Variable of Eigen::Matrix type.
  * @return An std::array variable with stacked columns from input m.
  */
-template<typename T,std::size_t S1,std::size_t S2> std::array<T,S1*S2> convert_to_array(const Eigen::Matrix<T,S1,S2>& m){
+template<typename T,int S1,int S2> std::array<T,S1*S2> convert_to_array(const Eigen::Matrix<T,S1,S2>& m){
     std::array<T,S1*S2> d_arr;
     Eigen::Matrix<T,S1,S2>::Map(&d_arr[0], m.rows(),m.cols()) = m;
     return d_arr;

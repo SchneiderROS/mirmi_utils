@@ -54,7 +54,7 @@ bool is_orthonormal(Eigen::Matrix<double,3,3> M);
  * @param v
  * @return
  */
-template<std::size_t S> double norm_2(const Eigen::Matrix<double,S,1> v){
+template<int S> double norm_2(const Eigen::Matrix<double,S,1> v){
     double n=0;
     for(unsigned i=0;i<v.rows();i++){
         n+=pow(v(i),2);

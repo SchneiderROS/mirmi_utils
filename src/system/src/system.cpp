@@ -43,12 +43,12 @@ std::string get_path_executable(char **argv){
     char *p;
 
     if(!(p = strrchr(argv[0], '/')))
-        char* rtn=getcwd(abs_exe_path, sizeof(abs_exe_path));
+        [[maybe_unused]] char* rtn=getcwd(abs_exe_path, sizeof(abs_exe_path));
     else
     {
         *p = '\0';
-        char* rtn=getcwd(path_save, sizeof(path_save));
-        int r=chdir(argv[0]);
+        [[maybe_unused]] char* rtn=getcwd(path_save, sizeof(path_save));
+        [[maybe_unused]] int r=chdir(argv[0]);
         rtn=getcwd(abs_exe_path, sizeof(abs_exe_path));
         r=chdir(path_save);
     }
@@ -60,12 +60,12 @@ bool process_is_running(const std::string &process){
     return system(cmd.c_str()) == 0;
 }
 
-std::vector<int> get_video_device_id(const std::string &device_name){
-    std::vector<int> valid_devices;
+std::vector<unsigned> get_video_device_id(const std::string &device_name){
+    std::vector<unsigned> valid_devices;
     unsigned i=0;
     while(true){
         int fd; // A file descriptor to the video device
-        int device_id = i;
+        unsigned device_id = i;
         std::string device = "/dev/video"  + std::to_string(device_id);
         i++;
         fd = open(device.c_str(),O_RDWR);

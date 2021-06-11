@@ -85,16 +85,16 @@ endif()
 
 target_compile_options(${PROJECT_NAME}_project_warnings
     INTERFACE
-    #    -Wall
-    #    -Wextra
-    #    -Wshadow
-    #    -Wnon-virtual-dtor
-    #    -Wold-style-cast
-    #    -Wcast-align
-    #    -Wunused
-    #    -Woverloaded-virtual
-    #    -Wpedantic
-    #    -Wconversion
+    -Wall
+    -Wextra
+    -Wshadow
+    -Wnon-virtual-dtor
+    -Wold-style-cast
+    -Wcast-align
+    -Wunused
+    -Woverloaded-virtual
+    -Wpedantic
+    -Wconversion
     -Wsign-conversion
     -Wnull-dereference
     -Wdouble-promotion
