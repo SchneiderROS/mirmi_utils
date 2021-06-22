@@ -8,19 +8,10 @@ set(${MODULE_NAME}_HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}/${MODULE_NAME}/network.hpp
     )
 
-if(BUILD_SHARED_LIBS)
-    add_library(${MODULE_NAME}
-        SHARED
-        ${${MODULE_NAME}_SRC}
-        ${${MODULE_NAME}_HEADER_FILES}
-        )
-else()
-    add_library(${MODULE_NAME}
-        STATIC
-        ${${MODULE_NAME}_SRC}
-        ${${MODULE_NAME}_HEADER_FILES}
-        )
-endif()
+add_library(${MODULE_NAME}
+    ${${MODULE_NAME}_SRC}
+    ${${MODULE_NAME}_HEADER_FILES}
+    )
 
 add_library(${PROJECT_NAME}::${MODULE_NAME} ALIAS ${MODULE_NAME})
 
@@ -38,6 +29,9 @@ target_link_libraries(${MODULE_NAME}
     ${PROJECT_NAME}_project_warnings
     ${PROJECT_NAME}::files
     PUBLIC
+    boost_system
+    pthread
+    crypto
     $<BUILD_INTERFACE:json-rpc-cxx>
     $<BUILD_INTERFACE:CONAN_PKG::simple-websocket-server>
     $<BUILD_INTERFACE:CONAN_PKG::nlohmann_json>

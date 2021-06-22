@@ -6,8 +6,8 @@
 
 #include <iostream>
 #include <array>
-#include "Eigen/Core"
-#include "Eigen/Dense"
+#include "eigen3/Eigen/Core"
+#include "eigen3/Eigen/Dense"
 #include "nlohmann/json.hpp"
 
 namespace msrm_utils {
