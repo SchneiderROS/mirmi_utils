@@ -151,32 +151,16 @@ include(cmake/FetchContent.cmake)
 add_library(${PROJECT_NAME}::${PROJECT_NAME}_project_options ALIAS ${PROJECT_NAME}_project_options)
 add_library(${PROJECT_NAME}::${PROJECT_NAME}_project_warnings ALIAS ${PROJECT_NAME}_project_warnings)
 
-#install(TARGETS ${PROJECT_NAME}_project_options EXPORT ProjectOptionsTargets)
-#install(TARGETS ${PROJECT_NAME}_project_warnings EXPORT ProjectWarningsTargets)
-
-#install(EXPORT ProjectOptionsTargets
-#    FILE ProjectOptionsTargets.cmake
-#    NAMESPACE ${PROJECT_NAME}::ProjectOptionsTargets::
-#    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ProjectOptionsTargets
-#    )
-#install(EXPORT ProjectWarningsTargets
-#    FILE ProjectWarningsTargets.cmake
-#    NAMESPACE ${PROJECT_NAME}::ProjectWarningsTargets::
-#    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ProjectWarningsTargets
-#    )
-
 add_subdirectory(src)
 if(ENABLE_TESTING)
     add_subdirectory(tests)
 endif()
 
 install(TARGETS benchmarking conversion files json math network system ${PROJECT_NAME}_project_options ${PROJECT_NAME}_project_warnings EXPORT ${PROJECT_NAME}Targets
-    #EXPORT ${PROJECT_NAME}Targets
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
     RUNTIME DESTINATION       ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION       ${CMAKE_INSTALL_LIBDIR}
     INCLUDES DESTINATION      ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
-    #ARCHIVE DESTINATION       ${CMAKE_INSTALL_SHAREDSTATEDIR}
     )
 
 install(EXPORT ${PROJECT_NAME}Targets
