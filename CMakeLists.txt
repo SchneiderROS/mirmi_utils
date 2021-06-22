@@ -156,60 +156,64 @@ if(ENABLE_TESTING)
     add_subdirectory(tests)
 endif()
 
-install(TARGETS benchmarking conversion files json math network system ${PROJECT_NAME}_project_options ${PROJECT_NAME}_project_warnings EXPORT ${PROJECT_NAME}Targets
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
-    RUNTIME DESTINATION       ${CMAKE_INSTALL_BINDIR}
-    LIBRARY DESTINATION       ${CMAKE_INSTALL_LIBDIR}
-    INCLUDES DESTINATION      ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
-    )
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 
-install(EXPORT ${PROJECT_NAME}Targets
-    FILE ${PROJECT_NAME}Targets.cmake
-    NAMESPACE ${PROJECT_NAME}::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
-    )
+    install(TARGETS benchmarking conversion files json math network system ${PROJECT_NAME}_project_options ${PROJECT_NAME}_project_warnings EXPORT ${PROJECT_NAME}Targets
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
+        RUNTIME DESTINATION       ${CMAKE_INSTALL_BINDIR}
+        LIBRARY DESTINATION       ${CMAKE_INSTALL_LIBDIR}
+        INCLUDES DESTINATION      ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
+        )
 
-message(STATUS "Generating install")
-set(project_config_in "${CMAKE_CURRENT_LIST_DIR}/cmake/${PROJECT_NAME}Config.cmake.in")
-set(project_config_out "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake")
-set(config_targets_file "${PROJECT_NAME}Targets.cmake")
-set(version_config_file "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake")
-set(export_dest_dir "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
-set(pkgconfig_install_dir "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
-#set(pkg_config "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc")
-#message(STATUS "pkg_config=${pkg_config}")
+    install(EXPORT ${PROJECT_NAME}Targets
+        FILE ${PROJECT_NAME}Targets.cmake
+        NAMESPACE ${PROJECT_NAME}::
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+        )
 
-# ---------------------------------------------------------------------------------------
-# Install pkg-config file
-# ---------------------------------------------------------------------------------------
-#configure_file("cmake/${PROJECT_NAME}.pc.in" "${pkg_config}" @ONLY)
-#install(FILES "${pkg_config}" DESTINATION "${pkgconfig_install_dir}")
+    message(STATUS "Generating install")
+    set(project_config_in "${CMAKE_CURRENT_LIST_DIR}/cmake/${PROJECT_NAME}Config.cmake.in")
+    set(project_config_out "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake")
+    set(config_targets_file "${PROJECT_NAME}Targets.cmake")
+    set(version_config_file "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake")
+    set(export_dest_dir "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+    set(pkgconfig_install_dir "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+    #set(pkg_config "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc")
+    #message(STATUS "pkg_config=${pkg_config}")
 
-# ---------------------------------------------------------------------------------------
-# Install CMake config files
-# ---------------------------------------------------------------------------------------
-include(CMakePackageConfigHelpers)
-configure_package_config_file(
-    ${project_config_in}
-    ${project_config_out}
-    INSTALL_DESTINATION "${CMAKE_INSTALL_DATADIR}/cmake/${PROJECT_NAME}"
-)
+    # ---------------------------------------------------------------------------------------
+    # Install pkg-config file
+    # ---------------------------------------------------------------------------------------
+    #configure_file("cmake/${PROJECT_NAME}.pc.in" "${pkg_config}" @ONLY)
+    #install(FILES "${pkg_config}" DESTINATION "${pkgconfig_install_dir}")
 
-install(
-    FILES ${project_config_out}
-    DESTINATION ${export_dest_dir}
-)
+    # ---------------------------------------------------------------------------------------
+    # Install CMake config files
+    # ---------------------------------------------------------------------------------------
+    include(CMakePackageConfigHelpers)
+    configure_package_config_file(
+        ${project_config_in}
+        ${project_config_out}
+        INSTALL_DESTINATION "${CMAKE_INSTALL_DATADIR}/cmake/${PROJECT_NAME}"
+        )
 
-write_basic_package_version_file("${version_config_file}"
-    VERSION ${PROJECT_VERSION}
-    COMPATIBILITY SameMajorVersion
-    )
-install(FILES "${project_config_out}" "${version_config_file}" DESTINATION "${export_dest_dir}")
+    install(
+        FILES ${project_config_out}
+        DESTINATION ${export_dest_dir}
+        )
 
-# ---------------------------------------------------------------------------------------
-# Support creation of installable packages
-# ---------------------------------------------------------------------------------------
-#include(cmake/${PROJECT_NAME}CPack.cmake)
+    write_basic_package_version_file("${version_config_file}"
+        VERSION ${PROJECT_VERSION}
+        COMPATIBILITY SameMajorVersion
+        )
+    install(FILES "${project_config_out}" "${version_config_file}" DESTINATION "${export_dest_dir}")
+
+    # ---------------------------------------------------------------------------------------
+    # Support creation of installable packages
+    # ---------------------------------------------------------------------------------------
+    #include(cmake/${PROJECT_NAME}CPack.cmake)
+
+endif()
 
 message("#########################################")
     message("\t \t Summary")
