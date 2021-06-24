@@ -63,6 +63,22 @@ template<int S> double norm_2(const Eigen::Matrix<double,S,1> v){
 }
 
 /**
+ * @brief Calculates the linear distance between two transformation matrices.
+ * @param T_1 First matrix
+ * @param T_2 Second matrix
+ * @return A distance value in meters.
+ */
+double get_linear_distance(const Eigen::Matrix<double,4,4>& T_1, const Eigen::Matrix<double,4,4>& T_2);
+
+/**
+ * @brief Calculates the angular distance between two transformation matrices.
+ * @param T_1 First matrix
+ * @param T_2 Second matrix
+ * @return The difference angle in radians.
+ */
+double get_angular_distance(const Eigen::Matrix<double,4,4>& T_1, const Eigen::Matrix<double,4,4>& T_2);
+
+/**
  * Gives a random number within an inclusive interval according to the uniform distribution.
  * @param fMin Maximum value of interval.
  * @param fMax Minimum value of interval.

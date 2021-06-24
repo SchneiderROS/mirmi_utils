@@ -100,6 +100,14 @@ bool is_orthonormal(Eigen::Matrix<double, 3, 3> M){
     return true;
 }
 
+double get_linear_distance(const Eigen::Matrix<double,4,4>& T_1, const Eigen::Matrix<double,4,4>& T_2){
+    return (T_1.block<3,1>(0,3)-T_2.block<3,1>(0,3)).norm();
+}
+
+double get_angular_distance(const Eigen::Matrix<double,4,4>& T_1, const Eigen::Matrix<double,4,4>& T_2){
+    return acos(((T_1.block<3,3>(0,0).transpose()*T_2.block<3,3>(0,0)).trace()-1)/2);
+}
+
 double fRand(double fMin, double fMax)
 {
     double f = static_cast<double>(rand()) / RAND_MAX;
