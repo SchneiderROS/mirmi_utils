@@ -23,12 +23,14 @@ target_include_directories(${MODULE_NAME}
     src
     )
 
+find_package(Eigen3 REQUIRED)
+
 target_link_libraries(${MODULE_NAME}
     PRIVATE
     ${PROJECT_NAME}_project_options
     ${PROJECT_NAME}_project_warnings
     PUBLIC
-    $<BUILD_INTERFACE:CONAN_PKG::eigen>
+    Eigen3::Eigen
     )
 
 set_target_properties(${MODULE_NAME} PROPERTIES PUBLIC_HEADER "${${MODULE_NAME}_HEADER_FILES}")

@@ -66,6 +66,8 @@ option(ENABLE_UNITY_BUILD "Enable unity build" ON)
 add_library(${PROJECT_NAME}_project_warnings INTERFACE)
 add_library(${PROJECT_NAME}_project_options INTERFACE)
 
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+
 target_include_directories(${PROJECT_NAME}_project_options
     INTERFACE
     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src/include>

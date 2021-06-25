@@ -8,7 +8,7 @@
 #include <array>
 #include <math.h>
 
-#include "eigen3/Eigen/Core"
+#include "Eigen/Core"
 
 namespace msrm_utils {
 

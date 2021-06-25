@@ -23,13 +23,16 @@ target_include_directories(${MODULE_NAME}
     src
     )
 
+find_package(Eigen3 REQUIRED)
+find_package(nlohmann_json REQUIRED)
+
 target_link_libraries(${MODULE_NAME}
     PRIVATE
     ${PROJECT_NAME}_project_options
     ${PROJECT_NAME}_project_warnings
     PUBLIC
-    $<BUILD_INTERFACE:CONAN_PKG::eigen>
-    $<BUILD_INTERFACE:CONAN_PKG::nlohmann_json>
+    Eigen3::Eigen
+    nlohmann_json::nlohmann_json
     )
 
 

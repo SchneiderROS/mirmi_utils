@@ -23,6 +23,10 @@ target_include_directories(${MODULE_NAME}
     src
     )
 
+find_package(nlohmann_json REQUIRED)
+find_package(httplib REQUIRED)
+find_package(simple-websocket-server REQUIRED)
+
 target_link_libraries(${MODULE_NAME}
     PRIVATE
     ${PROJECT_NAME}_project_options
@@ -33,9 +37,9 @@ target_link_libraries(${MODULE_NAME}
     pthread
     crypto
     $<BUILD_INTERFACE:json-rpc-cxx>
-    $<BUILD_INTERFACE:CONAN_PKG::simple-websocket-server>
-    $<BUILD_INTERFACE:CONAN_PKG::nlohmann_json>
-    $<BUILD_INTERFACE:CONAN_PKG::cpp-httplib>
+    simple-websocket-server::simple-websocket-server
+    nlohmann_json::nlohmann_json
+    httplib::httplib
     )
 
 set_target_properties(${MODULE_NAME} PROPERTIES PUBLIC_HEADER "${${MODULE_NAME}_HEADER_FILES}")

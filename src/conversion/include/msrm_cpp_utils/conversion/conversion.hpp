@@ -6,7 +6,7 @@
 
 #include <array>
 
-#include "eigen3/Eigen/Core"
+#include "Eigen/Core"
 
 namespace msrm_utils {
 

@@ -1,5 +1,5 @@
 #include "msrm_cpp_utils/math/math.hpp"
-#include "eigen3/Eigen/Dense"
+#include "Eigen/Dense"
 
 namespace msrm_utils {
 
