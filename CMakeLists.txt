@@ -81,7 +81,7 @@ if(ENABLE_PCH)
     target_precompile_headers(
         ${PROJECT_NAME}_project_options
         INTERFACE
-        ${CMAKE_SOURCE_DIR}/include/commons/pch.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/commons/pch.hpp
         )
 endif()
 
