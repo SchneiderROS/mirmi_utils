@@ -11,7 +11,7 @@ target_link_libraries(${PROJECT_NAME}_test_deps
 
 include(CTest)
 include(Catch)
-add_library(catch_main OBJECT ${CMAKE_SOURCE_DIR}/tests/unit_tests/tests_main.cpp)
+add_library(catch_main OBJECT ${CMAKE_CURRENT_SOURCE_DIR}/tests/unit_tests/tests_main.cpp)
 target_link_libraries(catch_main
     PRIVATE
     ${PROJECT_NAME}_test_deps
