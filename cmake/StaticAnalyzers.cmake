@@ -3,7 +3,7 @@ if(ENABLE_CPPCHECK)
     if(CPPCHECK)
         set(CMAKE_CXX_CPPCHECK
             ${CPPCHECK}
-            --suppress=syntaxError
+            --suppress=missingIncludeSystem
             --enable=all
             --inconclusive)
     else()
