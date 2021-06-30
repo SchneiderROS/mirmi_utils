@@ -241,7 +241,6 @@ JsonRPCServer::JsonRPCServer(const std::string& address, unsigned port) : m_addr
 }
 
 JsonRPCServer::~JsonRPCServer(){
-    this->stop_listening();
 }
 
 bool JsonRPCServer::start_listening(){
@@ -398,7 +397,6 @@ JsonWebsocketServer::JsonWebsocketServer(const std::string& address, unsigned po
 }
 
 JsonWebsocketServer::~JsonWebsocketServer(){
-    stop_listening();
 }
 
 bool JsonWebsocketServer::start_listening(){
@@ -553,7 +551,6 @@ JsonUDPServer::JsonUDPServer(unsigned port):m_port(port){
 }
 
 JsonUDPServer::~JsonUDPServer(){
-    stop_listening();
 }
 
 bool JsonUDPServer::start_listening(){
@@ -891,7 +888,7 @@ bool UDPStreamSender::send(const std::string &payload, bool sendWithTerminatingN
 }
 
 UDPStreamReceiver::UDPStreamReceiver(unsigned port, unsigned buffer_size, unsigned timeout_s, unsigned timeout_us,unsigned max_lost_packets,std::function<void(std::vector<double>&)> payload_callback,bool multicast):
-    m_port(port),m_buffer_size(buffer_size),m_header_size(10),m_packet_cnt(0),m_timeout_s(timeout_s),m_timeout_us(timeout_us),m_max_lost_packets(max_lost_packets),m_payload_callback(payload_callback),m_multicast(multicast){
+    m_port(port),m_buffer_size(buffer_size),m_header_size(10),m_packet_cnt(0),m_max_lost_packets(max_lost_packets),m_timeout_s(timeout_s),m_timeout_us(timeout_us),m_payload_callback(payload_callback),m_multicast(multicast){
 
 }
 
@@ -989,7 +986,7 @@ void UDPStreamReceiver::listen(){
 
         lost_package=true;
         unsigned i=0;
-        for(i;i<m_buffer_size;i++){ // For every element in the message
+        for(;i<m_buffer_size;i++){ // For every element in the message
             if(msg[i]==127 && msg[i+1]==127 && msg[i+2]==127 && msg[i+3]==127){ // If start bytes have been found...
                 payload_size=(unsigned)msg[i+5]; // Read payload size
                 if(msg[i+payload_size+header_size-4]==126 && msg[i+payload_size+header_size-3]==126 && msg[i+payload_size+header_size-2]==126 && msg[i+payload_size+header_size-1]==126){ // If end bytes have been found in accordance with the payload size
