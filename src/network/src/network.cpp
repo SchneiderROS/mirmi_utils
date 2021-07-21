@@ -972,13 +972,13 @@ void UDPStreamReceiver::listen(){
     // Loop for incoming messages is started
     while(m_keep_listening) { // Runs forever if no errors occur...
         if(!msg_connection_wait){
-            std::cout<<"Waiting for incoming messages...\n";
+            std::cout<<"Waiting for incoming messages..."<<std::endl;
             msg_connection_wait=true;
         }
         // Current content from the UDP connection is read into the buffer
         int reclen=recvfrom(m_socket, buf, m_buffer_size, 0, (struct sockaddr *) &m_si_me, &m_slen);
         if(reclen<0 && m_flag_connected){ // If connection is already established but the received message is invalid...
-            std::cout<<"UDPStreamReceiver: Could not receive message: "<<std::strerror(errno)<<"\n";
+            std::cout<<"UDPStreamReceiver: Could not receive message: "<<std::strerror(errno)<<std::endl;
             cnt_no_connection++;
         }
 
@@ -1000,7 +1000,7 @@ void UDPStreamReceiver::listen(){
         }
         if(i>=m_buffer_size-payload_size+header_size && reclen==payload_size+header_size && m_flag_connected){ // If the message cannot fit into the buffer but start bytes have been found...
             if(!msg_buffer){
-                std::cout<<"UDPStreamReceiver: Message reaches over end of buffer. Start of message is byte "<<i<<".\n";
+                std::cout<<"UDPStreamReceiver: Message reaches over end of buffer. Start of message is byte "<<i<<"."<<std::endl;
                 msg_buffer=true;
             }
             cnt_no_connection++;
@@ -1008,14 +1008,14 @@ void UDPStreamReceiver::listen(){
         }
         if(reclen!=payload_size+header_size && m_flag_connected){ // If the length of the received message is not equal to required message size and connection has already been established...
             if(!msg_corrupt){
-                std::cout<<"UDPStreamReceiver: Corrupted message. Received length is "<<reclen<<". Expected length is "<<payload_size+header_size<<".\n";
+                std::cout<<"UDPStreamReceiver: Corrupted message. Received length is "<<reclen<<". Expected length is "<<payload_size+header_size<<"."<<std::endl;;
                 msg_corrupt=true;
             }
             cnt_no_connection++;
             lost_package=true;
         }
         if(cnt_no_connection>0 && !lost_package){ // If packages have been lost and the current one is valid...
-            std::cout<<"UDPStreamReceiver: Number of lost packages: "<<m_lost_packets_cnt<<"\n";
+            std::cout<<"UDPStreamReceiver: Number of lost packages: "<<m_lost_packets_cnt<<std::endl;
             cnt_no_connection=0;
             msg_buffer=false;
             msg_corrupt=false;
@@ -1024,7 +1024,7 @@ void UDPStreamReceiver::listen(){
 
         if(cnt_no_connection>m_max_lost_packets){ // If 20 packages were invalid after a connection has already been established...
             if(!msg_connection_lost){
-                std::cout<<"UDPStreamReceiver: Lost "<<m_max_lost_packets<<" packets in a row. I assume the network connection is faulty and will terminate.\n";
+                std::cout<<"UDPStreamReceiver: Lost "<<m_max_lost_packets<<" packets in a row. I assume the network connection is faulty and will terminate."<<std::endl;
                 msg_connection_lost=true;
             }
             m_keep_listening=false;
@@ -1037,7 +1037,7 @@ void UDPStreamReceiver::listen(){
             m_flag_connected=true; // The first time this line is reached, a connection is considered as established.
             m_flag_valid_message=true; // Indicate a valid message
             if(!msg_connection_valid){
-                std::cout<<"UDPStreamReceiver: Communication has been established.\n";
+                std::cout<<"UDPStreamReceiver: Communication has been established."<<std::endl;
                 msg_connection_valid=true;
             }
         }
@@ -1060,7 +1060,7 @@ void UDPStreamReceiver::listen(){
         // Unload the payload. This function has to be defined by the respective telepresence prototype.
         m_payload_callback(payload);
     }
-    std::cout<<"UDPStreamReceiver: Incoming communication terminated.\n";
+    std::cout<<"UDPStreamReceiver: Incoming communication terminated."<<std::endl;
 }
 
 }
