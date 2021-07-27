@@ -65,6 +65,7 @@ option(ENABLE_UNITY_BUILD "Enable unity build" ON)
 
 add_library(${PROJECT_NAME}_project_warnings INTERFACE)
 add_library(${PROJECT_NAME}_project_options INTERFACE)
+add_library(${PROJECT_NAME}_project_deps INTERFACE)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_BINARY_DIR})
 
@@ -152,6 +153,12 @@ include(cmake/FetchContent.cmake)
 
 add_library(${PROJECT_NAME}::${PROJECT_NAME}_project_options ALIAS ${PROJECT_NAME}_project_options)
 add_library(${PROJECT_NAME}::${PROJECT_NAME}_project_warnings ALIAS ${PROJECT_NAME}_project_warnings)
+add_library(${PROJECT_NAME}::${PROJECT_NAME}_project_deps ALIAS ${PROJECT_NAME}_project_deps)
+
+target_link_libraries(${PROJECT_NAME}_project_deps
+    INTERFACE
+    spdlog::spdlog
+    )
 
 add_subdirectory(src)
 if(ENABLE_TESTING)
