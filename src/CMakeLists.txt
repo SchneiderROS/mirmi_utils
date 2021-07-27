@@ -1,0 +1,7 @@
+add_subdirectory(benchmarking)
+add_subdirectory(conversion)
+add_subdirectory(files)
+add_subdirectory(json)
+add_subdirectory(math)
+add_subdirectory(network)
+add_subdirectory(system)
