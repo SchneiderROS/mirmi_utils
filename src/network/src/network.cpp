@@ -365,7 +365,7 @@ JsonWebsocketServer::JsonWebsocketServer(const std::string& address, unsigned po
         // connection->send is an asynchronous function
         connection->send(out_message, [](const SimpleWeb::error_code &ec) {
             if(ec) {
-                spdlog::error("Server: Error sending message. Error: " + std::to_string(ec.value()) + ", error message: " + ec.message());
+                spdlog::debug("Server: Error sending message. Error: " + std::to_string(ec.value()) + ", error message: " + ec.message());
                         // See http://www.boost.org/doc/libs/1_65_0/doc/html/boost_asio/reference.html, Error Codes for error code meanings
             }
         });
@@ -488,7 +488,7 @@ JsonWebsocketClient::JsonWebsocketClient(const std::string& address, unsigned po
     // See http://www.boost.org/doc/libs/1_55_0/doc/html/boost_asio/reference.html, Error Codes for error code meanings
     m_client.on_error = [this](std::shared_ptr<SimpleWeb::SocketClient<SimpleWeb::WS>::Connection> /*connection*/, const SimpleWeb::error_code &ec) {
         m_error_flag=true;
-        spdlog::error("json websocket client: Error: " + std::to_string(ec.value()) + ", error message: "  + ec.message());
+        spdlog::debug("json websocket client: Error: " + std::to_string(ec.value()) + ", error message: "  + ec.message());
     };
 }
 
@@ -974,7 +974,7 @@ void UDPStreamReceiver::listen(){
         // Current content from the UDP connection is read into the buffer
         int reclen=recvfrom(m_socket, buf, m_buffer_size, 0, (struct sockaddr *) &m_si_me, &m_slen);
         if(reclen<0 && m_flag_connected){ // If connection is already established but the received message is invalid...
-            spdlog::warn("UDPStreamReceiver: Could not receive message: "+std::string(std::strerror(errno)));
+            spdlog::debug("UDPStreamReceiver: Could not receive message: "+std::string(std::strerror(errno)));
             cnt_no_connection++;
         }
 
@@ -996,7 +996,7 @@ void UDPStreamReceiver::listen(){
         }
         if(i>=m_buffer_size-payload_size+header_size && reclen==payload_size+header_size && m_flag_connected){ // If the message cannot fit into the buffer but start bytes have been found...
             if(!msg_buffer){
-                spdlog::warn("UDPStreamReceiver: Message reaches over end of buffer. Start of message is byte " + std::to_string(i)+ ".");
+                spdlog::debug("UDPStreamReceiver: Message reaches over end of buffer. Start of message is byte " + std::to_string(i)+ ".");
                 msg_buffer=true;
             }
             cnt_no_connection++;
