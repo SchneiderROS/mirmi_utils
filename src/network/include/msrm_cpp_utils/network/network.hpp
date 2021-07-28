@@ -106,6 +106,7 @@ struct ArgPair{
 /*! Interface for json method servers */
 class IJsonMethodServer{
 public:
+    IJsonMethodServer(const std::string& id);
     virtual ~IJsonMethodServer() = default;
     /**
      * @brief start_listening When calling this method the server should start listening.
@@ -124,6 +125,8 @@ public:
      * @return
      */
     virtual bool bind_method(const std::string& name, std::function<nlohmann::json(const nlohmann::json& request)> method, const std::vector<ArgPair>& arguments) = 0;
+protected:
+    std::string m_id;
 };
 
 /*! An rpc method server based on json.*/
@@ -221,7 +224,7 @@ public:
      * @param endpoint Server endpoint
      */
     [[deprecated("Will be removed in future releases. Please use the robotp2p repo instead (https://gitlab.lrz.de/ge46bax/robotp2p)")]]
-    JsonWebsocketServer(const std::string& address="localhost", unsigned port=9000, const std::string& endpoint="");
+    JsonWebsocketServer(const std::string &id, const std::string& address="localhost", unsigned port=9000, const std::string& endpoint="");
     /**
      * @brief ~JsonWebsocketServer The destructor automatically calls stop_listening
      */
@@ -307,7 +310,7 @@ public:
      * @brief JsonUDPServer Constructor
      * @param port The port to bind to.
      */
-    JsonUDPServer(unsigned port);
+    JsonUDPServer(const std::string &id, unsigned port);
     /**
      * @brief ~JsonUDPServer The destructor automatically calls stop_listening
      */
@@ -410,7 +413,7 @@ public:
      * @param address Server address
      * @param port Server port
      */
-    UDPStreamSender(const std::string& address, unsigned port);
+    UDPStreamSender(const std::string &id, const std::string& address, unsigned port);
     /**
      * @brief ~UDPStreamSender The destructor automatically calls disconnect
      */
@@ -440,6 +443,7 @@ public:
      */
     bool send(const std::string& payload, bool sendWithTerminatingNullCharacter = false);
 private:
+    std::string m_id;
     std::string m_address;
     unsigned m_port;
     int m_socket;
@@ -463,7 +467,7 @@ public:
      * @param max_lost_packets Maximum allowed number of packet before connection is closed
      * @param payload_callback Callback to function that accepts the payload for unpacking.
      */
-    UDPStreamReceiver(unsigned port, unsigned buffer_size, unsigned timeout_s, unsigned timeout_us,unsigned max_lost_packets,std::function<void(std::vector<double>&)> payload_callback,bool multicast=false);
+    UDPStreamReceiver(const std::string& id, unsigned port, unsigned buffer_size, unsigned timeout_s, unsigned timeout_us,unsigned max_lost_packets,std::function<void(std::vector<double>&)> payload_callback,bool multicast=false);
     /**
      * @brief ~UDPStreamReceiver The destructor automatically calls disconnect
      */
@@ -487,6 +491,7 @@ public:
 private:
     void listen();
 
+    std::string m_id;
     unsigned m_port;
     int m_socket;
     struct sockaddr_in m_si_me;
