@@ -29,6 +29,7 @@ target_link_libraries(${MODULE_NAME}
     PRIVATE
     ${PROJECT_NAME}_project_options
     ${PROJECT_NAME}_project_warnings
+    ${PROJECT_NAME}_project_deps
     PUBLIC
     Eigen3::Eigen
     )

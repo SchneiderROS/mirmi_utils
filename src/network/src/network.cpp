@@ -352,11 +352,11 @@ JsonWebsocketServer::JsonWebsocketServer(const std::string& address, unsigned po
                 response["error"]=true;
             }
         }catch(const nlohmann::detail::type_error& e){
-            std::cout<<e.what()<<std::endl;
+            spdlog::debug(e.what());
             response["result"]=e.what();
             response["error"]=true;
         }catch(const nlohmann::detail::parse_error& e){
-            std::cout<<e.what()<<std::endl;
+            spdlog::debug(e.what());
             response["result"]=e.what();
             response["error"]=true;
         }
@@ -365,9 +365,8 @@ JsonWebsocketServer::JsonWebsocketServer(const std::string& address, unsigned po
         // connection->send is an asynchronous function
         connection->send(out_message, [](const SimpleWeb::error_code &ec) {
             if(ec) {
-                std::cout << "Server: Error sending message. " <<
-                             // See http://www.boost.org/doc/libs/1_65_0/doc/html/boost_asio/reference.html, Error Codes for error code meanings
-                             "Error: " << ec << ", error message: " << ec.message() << std::endl;
+                spdlog::error("Server: Error sending message. Error: " + std::to_string(ec.value()) + ", error message: " + ec.message());
+                        // See http://www.boost.org/doc/libs/1_65_0/doc/html/boost_asio/reference.html, Error Codes for error code meanings
             }
         });
     };
@@ -398,14 +397,14 @@ JsonWebsocketServer::~JsonWebsocketServer(){
 
 bool JsonWebsocketServer::start_listening(){
     if(!is_port_available("localhost",m_server.config.port)){
-        std::cout<<"Port "+std::to_string(m_server.config.port)+" is unavailable."<<std::endl;
+        spdlog::error("Port " + std::to_string(m_server.config.port) + " is unavailable.");
         return false;
     }
     m_server_thread = std::thread([this](){
         try{
             m_server.start();
         }catch(const boost::exception_detail::clone_impl<boost::exception_detail::error_info_injector<boost::system::system_error> >& e){
-            std::cout<<e.what()<<std::endl;
+            spdlog::debug(e.what());
             return;
         }
     });
@@ -427,7 +426,7 @@ std::pair<bool,std::string> JsonWebsocketServer::message_preprocessing(nlohmann:
             message["request"]=nlohmann::json();
         }
     }catch(const nlohmann::detail::type_error& e){
-        std::cout<<e.what()<<std::endl;
+        spdlog::debug(e.what());
         return std::pair<bool,std::string>(false,"Json type error.");
     }
     return std::pair<bool,std::string>(true,"");
@@ -443,7 +442,7 @@ bool JsonWebsocketServer::check_if_method_exists(const std::string& method){
 
 bool JsonWebsocketServer::bind_method(const std::string &name, std::function<nlohmann::json (const nlohmann::json& request)> method, const std::vector<ArgPair> &arguments){
     if(this->check_if_method_exists(name)){
-        std::cout<<"Cannot bind method with name "<<name<<" since it already exists."<<std::endl;
+        spdlog::error("Cannot bind method with name " + name + " since it already exists.");
         return false;
     }
     m_method_callbacks.insert(std::make_pair(name, method));
@@ -475,9 +474,9 @@ JsonWebsocketClient::JsonWebsocketClient(const std::string& address, unsigned po
         if(m_response.find("error")!=m_response.end()){
             m_error_flag=true;
             if(m_response.find("result")==m_response.end()){
-                std::cout<<"Unknown error at json websocket server";
+                spdlog::error("Unknown error at json websocket server");
             }else{
-                std::cout<<m_response["result"]<<std::endl;
+                spdlog::info(m_response["result"]);
             }
         }
         connection->send_close(1000);
@@ -489,7 +488,7 @@ JsonWebsocketClient::JsonWebsocketClient(const std::string& address, unsigned po
     // See http://www.boost.org/doc/libs/1_55_0/doc/html/boost_asio/reference.html, Error Codes for error code meanings
     m_client.on_error = [this](std::shared_ptr<SimpleWeb::SocketClient<SimpleWeb::WS>::Connection> /*connection*/, const SimpleWeb::error_code &ec) {
         m_error_flag=true;
-        std::cout << "json websocket client: Error: " << ec << ", error message: " << ec.message() << std::endl;
+        spdlog::error("json websocket client: Error: " + std::to_string(ec.value()) + ", error message: "  + ec.message());
     };
 }
 
@@ -552,13 +551,13 @@ JsonUDPServer::~JsonUDPServer(){
 
 bool JsonUDPServer::start_listening(){
     if(!is_port_available("localhost",m_port)){
-        spdlog::info("Port "+std::to_string(m_port)+" is unavailable.");
+        spdlog::error("Port "+std::to_string(m_port)+" is unavailable.");
         return false;
     }
     m_buffer_size=4096;
     m_slen = sizeof(m_si_other);
     if((m_socket=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1){ // If socket for incoming connection could not be created...
-        std::cout<<"Could not create socket: "<<std::strerror(errno)<<std::endl;
+        spdlog::error("Could not create socket: " + std::string(std::strerror(errno)));
         return false;
     }
 
@@ -567,7 +566,7 @@ bool JsonUDPServer::start_listening(){
     tv.tv_sec = 0;
     tv.tv_usec = 10000;
     if(setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv) == -1){
-        std::cout<<"Could not set timeout for socket: "<<std::strerror(errno)<<std::endl;
+        spdlog::error("Could not set timeout for socket: " + std::string(std::strerror(errno)));
         return false;
     }
 
@@ -576,7 +575,7 @@ bool JsonUDPServer::start_listening(){
     m_si_me.sin_port = htons(static_cast<uint16_t>(m_port));
     m_si_me.sin_addr.s_addr=htonl (INADDR_ANY);
     if(bind(m_socket , (struct sockaddr*)&m_si_me, sizeof(m_si_me)) == -1){
-        std::cout<<"Could not bind socket: "<<std::strerror(errno)<<std::endl;
+        spdlog::error("Could not bind socket: " + std::string(std::strerror(errno)));
         return false;
     }
 
@@ -643,10 +642,10 @@ std::string JsonUDPServer::call_method(nlohmann::json &message){
             response["error"]=true;
         }
     }catch(const nlohmann::detail::type_error& e){
-        std::cout<<e.what()<<std::endl;
+        spdlog::debug(e.what());
         response["result"]=e.what();
     }catch(const nlohmann::detail::parse_error& e){
-        std::cout<<e.what()<<std::endl;
+        spdlog::debug(e.what());
         response["result"]=e.what();
     }
     return response.dump();
@@ -654,7 +653,7 @@ std::string JsonUDPServer::call_method(nlohmann::json &message){
 
 bool JsonUDPServer::bind_method(const std::string& name, std::function<nlohmann::json(const nlohmann::json& request)> method, const std::vector<ArgPair> &arguments){
     if(this->check_if_method_exists(name)){
-        std::cout<<"Cannot bind method with name "<<name<<" since it already exists."<<std::endl;
+        spdlog::error("Cannot bind method with name " + name + " since it already exists.");
         return false;
     }
     m_method_callbacks.insert(std::make_pair(name, method));
@@ -680,7 +679,7 @@ std::pair<bool,std::string> JsonUDPServer::message_preprocessing(nlohmann::json 
             message["request"]=nlohmann::json();
         }
     }catch(const nlohmann::detail::type_error& e){
-        std::cout<<e.what()<<std::endl;
+        spdlog::debug(e.what());
         return std::pair<bool,std::string>(false,"Json type error.");
     }
     return std::pair<bool,std::string>(true,"");
@@ -716,14 +715,14 @@ bool JsonUDPClient::send(const std::string &method, const nlohmann::json &reques
 
     if ((m_socket=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
         // If socket for outgoing connection could not be created...
-        std::cout<<"Could not create socket: "<<std::strerror(errno)<<std::endl;
+        spdlog::error("Could not create socket: " + std::string(std::strerror(errno)));
         return false;
     }
     struct timeval tv;
     tv.tv_sec = m_timeout;
     tv.tv_usec = 0;
     if(setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv) == -1){
-        std::cout<<"Could not set timeout: "<<std::strerror(errno)<<std::endl;
+        spdlog::error("Could not set timeout: " + std::string(std::strerror(errno)));
         return false;
     }
     memset((char *) &m_si_other, 0, sizeof(m_si_other));
@@ -731,7 +730,7 @@ bool JsonUDPClient::send(const std::string &method, const nlohmann::json &reques
     m_si_other.sin_port = htons(m_port);
 
     if(inet_aton(m_address.c_str(), &m_si_other.sin_addr)==0){
-        std::cout<<"Invalid address: "<<m_address<<", port: "<<m_port<<std::endl;
+        spdlog::error("Invalid address: " + m_address + ", port: " + std::to_string(m_port));
         return false;
     }
 //    int res = inet_aton(m_address.c_str(), &m_si_other.sin_addr);
@@ -746,7 +745,7 @@ bool JsonUDPClient::send(const std::string &method, const nlohmann::json &reques
     //       "If you're sending an initial request ... you should *not* set the MSG_CONFIRM flag"
     int result = sendto(m_socket, msg, strlen(msg), MSG_CONFIRM, (struct sockaddr *) &m_si_other, m_slen);
     if(result<0){
-        std::cout<<"Could not send message: "<<std::strerror(errno)<<std::endl;
+        spdlog::error("Could not send message: " + std::string(std::strerror(errno)));
         return false;
     }
     char buf[m_buffer_size];
@@ -759,9 +758,9 @@ bool JsonUDPClient::send(const std::string &method, const nlohmann::json &reques
     m_response = nlohmann::json::parse(std::string(buf));
     if(m_response.find("error")!=m_response.end()){
         if(m_response.find("result")==m_response.end()){
-            std::cout<<"Unknown error at json websocket server";
+            spdlog::error("Unknown error at json websocket server");
         }else{
-            std::cout<<m_response["result"]<<std::endl;
+            spdlog::info(m_response["result"]);
         }
         return false;
     }else{
@@ -792,14 +791,14 @@ bool UDPStreamSender::connect(){
     m_slen=sizeof(m_si_other);
     if ((m_socket=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) // If socket for outgoing connection could not be created...
     {
-        std::cout<<"Could not create socket: "<<std::strerror(errno)<<std::endl;
+        spdlog::error("Could not create socket: " + std::string(std::strerror(errno)));
         return false;
     }
     memset((char *) &m_si_other, 0, sizeof(m_si_other));
     m_si_other.sin_family = AF_INET;
     m_si_other.sin_port = htons(m_port);
     if(inet_aton(m_address.c_str(), &m_si_other.sin_addr)==0){
-        std::cout<<"Invalid address: "<<m_address<<", port: "<<m_port<<std::endl;
+        spdlog::error("Invalid address: " + m_address + ", port: " + std::to_string(m_port));
         return false;
     }
     m_packet_cnt = 0;
@@ -808,7 +807,7 @@ bool UDPStreamSender::connect(){
 
 bool UDPStreamSender::disconnect(){
     if(close(m_socket)==-1){
-        std::cout<<"UDPStreamSender: Could not close socket: "<<std::strerror(errno)<<std::endl;
+        spdlog::error("UDPStreamSender: Could not close socket: "+std::string(std::strerror(errno)));
         return false;
     }
     return true;
@@ -865,7 +864,7 @@ bool UDPStreamSender::send(const std::vector<double>& payload){
     // The message is sent out to the peer robot.
     int err=sendto(m_socket, msg, sizeof(msg) , 0 , (struct sockaddr *) &m_si_other, m_slen)<0;
     if(err<0){ // If an error occured during sending...
-        std::cout<<"Could not send message: "<<std::strerror(errno)<<std::endl;
+        spdlog::error("Could not send message: "+std::string(std::strerror(errno)));
         return false;
     }
     return true;
@@ -878,7 +877,7 @@ bool UDPStreamSender::send(const std::string &payload, bool sendWithTerminatingN
     // The message is sent out to the peer robot.
     int err = sendto(m_socket, msg, messageLength, 0 , (struct sockaddr *) &m_si_other, m_slen) < 0;
     if (err < 0) { // If an error occurred during sending...
-        std::cout << "Could not send message: " << std::strerror(errno) << std::endl;
+        spdlog::error("Could not send message: " + std::string(std::strerror(errno)));
         return false;
     }
     return true;
@@ -896,7 +895,7 @@ UDPStreamReceiver::~UDPStreamReceiver(){
 bool UDPStreamReceiver::connect(){
     m_slen = sizeof(m_si_me);
     if((m_socket=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1){ // If socket for incoming connection could not be created...
-        std::cout<<"Could not create socket: "<<std::strerror(errno)<<std::endl;
+        spdlog::error("Could not create socket: "+std::string(std::strerror(errno)));
         return false;
     }
 
@@ -905,7 +904,7 @@ bool UDPStreamReceiver::connect(){
     tv.tv_sec = m_timeout_s;
     tv.tv_usec = m_timeout_us;
     if(setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv)==-1){
-        std::cout<<"Could not set socket options: "<<std::strerror(errno)<<std::endl;
+        spdlog::error("Could not set socket options: "+std::string(std::strerror(errno)));
         return false;
     }
 
@@ -914,7 +913,7 @@ bool UDPStreamReceiver::connect(){
     m_si_me.sin_port = htons(m_port);
     m_si_me.sin_addr.s_addr=htonl (INADDR_ANY);
     if(bind(m_socket, (struct sockaddr*)&m_si_me, sizeof(m_si_me))==-1){
-        std::cout<<"Could not bind socket: "<<std::strerror(errno)<<std::endl;
+        spdlog::error("Could not bind socket: "+std::string(std::strerror(errno)));
         return false;
     }
     if(m_multicast){
@@ -924,7 +923,7 @@ bool UDPStreamReceiver::connect(){
         mreq.imr_interface.s_addr = htonl(INADDR_ANY);
         int err=setsockopt(m_socket,IPPROTO_IP,IP_ADD_MEMBERSHIP,&mreq,sizeof(mreq));
         if(err<0){
-            std::cout<<"Could not set socket options for multicast."<<std::endl;
+            spdlog::error("Could not set socket options for multicast.");
         }
     }
 
@@ -939,7 +938,7 @@ bool UDPStreamReceiver::disconnect(){
         m_listen_thread.join();
     }
     if(close(m_socket)==-1){
-        std::cout<<"UDPStreamReceiver: Could not close socket: "<<std::strerror(errno)<<std::endl;
+        spdlog::error("UDPStreamReceiver: Could not close socket: "+std::string(std::strerror(errno)));
         return false;
     }
     return true;
@@ -969,13 +968,13 @@ void UDPStreamReceiver::listen(){
     // Loop for incoming messages is started
     while(m_keep_listening) { // Runs forever if no errors occur...
         if(!msg_connection_wait){
-            std::cout<<"Waiting for incoming messages..."<<std::endl;
+            spdlog::info("Waiting for incoming messages...");
             msg_connection_wait=true;
         }
         // Current content from the UDP connection is read into the buffer
         int reclen=recvfrom(m_socket, buf, m_buffer_size, 0, (struct sockaddr *) &m_si_me, &m_slen);
         if(reclen<0 && m_flag_connected){ // If connection is already established but the received message is invalid...
-            std::cout<<"UDPStreamReceiver: Could not receive message: "<<std::strerror(errno)<<std::endl;
+            spdlog::warn("UDPStreamReceiver: Could not receive message: "+std::string(std::strerror(errno)));
             cnt_no_connection++;
         }
 
@@ -997,7 +996,7 @@ void UDPStreamReceiver::listen(){
         }
         if(i>=m_buffer_size-payload_size+header_size && reclen==payload_size+header_size && m_flag_connected){ // If the message cannot fit into the buffer but start bytes have been found...
             if(!msg_buffer){
-                std::cout<<"UDPStreamReceiver: Message reaches over end of buffer. Start of message is byte "<<i<<"."<<std::endl;
+                spdlog::warn("UDPStreamReceiver: Message reaches over end of buffer. Start of message is byte " + std::to_string(i)+ ".");
                 msg_buffer=true;
             }
             cnt_no_connection++;
@@ -1005,14 +1004,14 @@ void UDPStreamReceiver::listen(){
         }
         if(reclen!=payload_size+header_size && m_flag_connected){ // If the length of the received message is not equal to required message size and connection has already been established...
             if(!msg_corrupt){
-                std::cout<<"UDPStreamReceiver: Corrupted message. Received length is "<<reclen<<". Expected length is "<<payload_size+header_size<<"."<<std::endl;;
+                spdlog::debug("UDPStreamReceiver: Corrupted message. Received length is "+std::to_string(reclen)+". Expected length is "+std::to_string(payload_size+header_size)+".");
                 msg_corrupt=true;
             }
             cnt_no_connection++;
             lost_package=true;
         }
         if(cnt_no_connection>0 && !lost_package){ // If packages have been lost and the current one is valid...
-            std::cout<<"UDPStreamReceiver: Number of lost packages: "<<m_lost_packets_cnt<<std::endl;
+            spdlog::warn("UDPStreamReceiver: Number of lost packages: " + std::to_string(m_lost_packets_cnt));
             cnt_no_connection=0;
             msg_buffer=false;
             msg_corrupt=false;
@@ -1021,7 +1020,7 @@ void UDPStreamReceiver::listen(){
 
         if(cnt_no_connection>m_max_lost_packets){ // If 20 packages were invalid after a connection has already been established...
             if(!msg_connection_lost){
-                std::cout<<"UDPStreamReceiver: Lost "<<m_max_lost_packets<<" packets in a row. I assume the network connection is faulty and will terminate."<<std::endl;
+                spdlog::error("UDPStreamReceiver: Lost " + std::to_string(m_max_lost_packets) + " packets in a row. I assume the network connection is faulty and will terminate.");
                 msg_connection_lost=true;
             }
             m_keep_listening=false;
@@ -1034,7 +1033,7 @@ void UDPStreamReceiver::listen(){
             m_flag_connected=true; // The first time this line is reached, a connection is considered as established.
             m_flag_valid_message=true; // Indicate a valid message
             if(!msg_connection_valid){
-                std::cout<<"UDPStreamReceiver: Communication has been established."<<std::endl;
+                spdlog::info("UDPStreamReceiver: Communication has been established.");
                 msg_connection_valid=true;
             }
         }
@@ -1057,7 +1056,7 @@ void UDPStreamReceiver::listen(){
         // Unload the payload. This function has to be defined by the respective telepresence prototype.
         m_payload_callback(payload);
     }
-    std::cout<<"UDPStreamReceiver: Incoming communication terminated."<<std::endl;
+    spdlog::info("UDPStreamReceiver: Incoming communication terminated.");
 }
 
 }

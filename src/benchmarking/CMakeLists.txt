@@ -27,7 +27,9 @@ target_link_libraries(${MODULE_NAME}
     PRIVATE
     ${PROJECT_NAME}_project_options
     ${PROJECT_NAME}_project_warnings
+    ${PROJECT_NAME}_project_deps
     PUBLIC
+    spdlog::spdlog
     )
 
 set_target_properties(${MODULE_NAME} PROPERTIES PUBLIC_HEADER "${${MODULE_NAME}_HEADER_FILES}")

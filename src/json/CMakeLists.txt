@@ -30,6 +30,8 @@ target_link_libraries(${MODULE_NAME}
     PRIVATE
     ${PROJECT_NAME}_project_options
     ${PROJECT_NAME}_project_warnings
+    ${PROJECT_NAME}_project_deps
+    spdlog::spdlog
     PUBLIC
     Eigen3::Eigen
     nlohmann_json::nlohmann_json

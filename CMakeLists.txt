@@ -5,8 +5,8 @@
 cmake_minimum_required(VERSION 3.16...3.20)
 
 set(PROJECT_VERSION_MAJOR 1)
-set(PROJECT_VERSION_MINOR 4)
-set(PROJECT_VERSION_PATCH 3)
+set(PROJECT_VERSION_MINOR 5)
+set(PROJECT_VERSION_PATCH 0)
 set(PROJECT_VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH})
 
 project(msrm_cpp_utils VERSION ${PROJECT_VERSION}
@@ -155,9 +155,10 @@ add_library(${PROJECT_NAME}::${PROJECT_NAME}_project_options ALIAS ${PROJECT_NAM
 add_library(${PROJECT_NAME}::${PROJECT_NAME}_project_warnings ALIAS ${PROJECT_NAME}_project_warnings)
 add_library(${PROJECT_NAME}::${PROJECT_NAME}_project_deps ALIAS ${PROJECT_NAME}_project_deps)
 
+find_package(spdlog REQUIRED)
+
 target_link_libraries(${PROJECT_NAME}_project_deps
     INTERFACE
-    spdlog::spdlog
     )
 
 add_subdirectory(src)
@@ -167,7 +168,7 @@ endif()
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 
-    install(TARGETS benchmarking conversion files json math network system ${PROJECT_NAME}_project_options ${PROJECT_NAME}_project_warnings EXPORT ${PROJECT_NAME}Targets
+    install(TARGETS benchmarking conversion files json math network system ${PROJECT_NAME}_project_options ${PROJECT_NAME}_project_warnings ${PROJECT_NAME}_project_deps EXPORT ${PROJECT_NAME}Targets
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
         RUNTIME DESTINATION       ${CMAKE_INSTALL_BINDIR}
         LIBRARY DESTINATION       ${CMAKE_INSTALL_LIBDIR}
