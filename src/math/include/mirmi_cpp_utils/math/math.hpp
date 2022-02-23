@@ -10,7 +10,7 @@
 
 #include "Eigen/Core"
 
-namespace msrm_utils {
+namespace mirmi_utils {
 
 Eigen::Matrix<double,6,1> rotate_vector(const Eigen::Matrix<double,6,1>& v_in, const Eigen::Matrix<double, 3, 3> &M);
 

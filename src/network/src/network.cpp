@@ -1,6 +1,6 @@
-#include "msrm_cpp_utils/network/network.hpp"
+#include "mirmi_cpp_utils/network/network.hpp"
 
-#include "msrm_cpp_utils/files/files.hpp"
+#include "mirmi_cpp_utils/files/files.hpp"
 
 #include <chrono>
 #include <bits/stdc++.h>
@@ -11,7 +11,7 @@
 #include "spdlog/spdlog.h"
 
 
-namespace msrm_utils{
+namespace mirmi_utils{
 
 bool ping(const char *ipaddr) {
     if(!is_valid_ip_address(ipaddr)){

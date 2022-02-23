@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-namespace msrm_utils {
+namespace mirmi_utils {
 
 /**
  * @brief Executes the given system command.

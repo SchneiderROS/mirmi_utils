@@ -1,4 +1,4 @@
-#include "msrm_cpp_utils/system/system.hpp"
+#include "mirmi_cpp_utils/system/system.hpp"
 
 #include <unistd.h>
 #include <linux/limits.h>
@@ -22,7 +22,7 @@
 #include <random>
 
 
-namespace msrm_utils {
+namespace mirmi_utils {
 
 std::string exec(const char* cmd) {
     std::array<char, 128> buffer;

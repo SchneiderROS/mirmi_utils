@@ -1,6 +1,6 @@
-#include "msrm_cpp_utils/files/files.hpp"
+#include "mirmi_cpp_utils/files/files.hpp"
 
-namespace msrm_utils {
+namespace mirmi_utils {
 
 void write_endl_to_file(const std::string& file){
     std::ofstream s;

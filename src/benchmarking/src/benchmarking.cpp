@@ -1,6 +1,6 @@
-#include "msrm_cpp_utils/benchmarking/benchmarking.hpp"
+#include "mirmi_cpp_utils/benchmarking/benchmarking.hpp"
 
 
-namespace msrm_utils {
+namespace mirmi_utils {
 
 }

@@ -31,7 +31,7 @@
 #include "httplib.h"
 #include "nlohmann/json.hpp"
 
-namespace msrm_utils{
+namespace mirmi_utils{
 
 /**
  * Pings a specified IP address.

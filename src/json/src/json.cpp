@@ -1,6 +1,6 @@
-#include "msrm_cpp_utils/json/json.hpp"
+#include "mirmi_cpp_utils/json/json.hpp"
 
-namespace msrm_utils {
+namespace mirmi_utils {
 
 bool find_json_value(const nlohmann::json& json, const char* key){
     try{

@@ -1,7 +1,7 @@
-#include "msrm_cpp_utils/math/math.hpp"
+#include "mirmi_cpp_utils/math/math.hpp"
 #include "Eigen/Dense"
 
-namespace msrm_utils {
+namespace mirmi_utils {
 
 Eigen::Matrix<double, 6, 1> rotate_vector(const Eigen::Matrix<double, 6, 1> &v_in, const Eigen::Matrix<double,3,3> &M){
     Eigen::Vector3d v_in_t={v_in[0],v_in[1],v_in[2]};

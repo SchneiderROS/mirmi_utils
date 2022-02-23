@@ -1,5 +1,5 @@
-#include "msrm_cpp_utils/conversion/conversion.hpp"
+#include "mirmi_cpp_utils/conversion/conversion.hpp"
 
-namespace msrm_utils {
+namespace mirmi_utils {
 
 }

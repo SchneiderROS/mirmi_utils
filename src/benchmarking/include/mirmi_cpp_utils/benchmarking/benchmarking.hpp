@@ -10,7 +10,7 @@
 
 #include "spdlog/spdlog.h"
 
-namespace msrm_utils {
+namespace mirmi_utils {
 
 /*! Scoped timer for quick benchmarking */
 template<typename d>class ScopedTimer{

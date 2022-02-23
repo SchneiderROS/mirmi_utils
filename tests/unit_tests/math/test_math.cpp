@@ -1,7 +1,7 @@
-#include "msrm_cpp_utils/math/math.hpp"
+#include "mirmi_cpp_utils/math/math.hpp"
 #include "catch2/catch.hpp"
 
-namespace msrm_utils {
+namespace mirmi_utils {
 
 TEST_CASE("get rotation matrix from vector","[math]"){
     Eigen::Matrix<double,3,1> v1,v2;

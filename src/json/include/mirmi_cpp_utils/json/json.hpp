@@ -12,7 +12,7 @@
 #include "spdlog/spdlog.h"
 
 
-namespace msrm_utils {
+namespace mirmi_utils {
 
 /**
  * Appends the given Eigen::Matrix value to the indicated json array.

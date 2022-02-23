@@ -8,7 +8,7 @@
 
 #include "Eigen/Core"
 
-namespace msrm_utils {
+namespace mirmi_utils {
 
 /**
  * Converts an Eigen::Matrix type into an std::array type assuming column major.
