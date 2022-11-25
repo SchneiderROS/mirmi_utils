@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <array>
+#include <optional>
 #include "Eigen/Core"
 #include "Eigen/Dense"
 #include "nlohmann/json.hpp"

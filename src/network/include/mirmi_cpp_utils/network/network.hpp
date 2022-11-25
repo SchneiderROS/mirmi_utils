@@ -22,6 +22,7 @@
 #include <map>
 #include <functional>
 #include <initializer_list>
+#include <optional>
 
 #include "simple-websocket-server/server_ws.hpp"
 #include "simple-websocket-server/client_ws.hpp"
