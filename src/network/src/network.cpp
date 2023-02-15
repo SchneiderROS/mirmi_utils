@@ -787,6 +787,10 @@ UDPStreamSender::UDPStreamSender(const std::string& id, const std::string &addre
 
 }
 
+UDPStreamSender::UDPStreamSender(const std::string& id, const std::string &address, unsigned port, const std::string &interface):m_id(id),m_address(address),m_port(port),m_header_size(10),m_packet_cnt(0),m_interface(interface){
+    m_interface = get_ip_by_hostname(m_interface.value().c_str());
+}
+
 UDPStreamSender::~UDPStreamSender(){
     disconnect();
 }
@@ -806,6 +810,12 @@ bool UDPStreamSender::connect(){
         return false;
     }
     m_packet_cnt = 0;
+
+    if(m_interface.has_value()){
+        printf(m_interface.value().c_str());
+        m_si_me.sin_addr.s_addr = inet_addr(m_interface.value().c_str());
+        setsockopt(m_socket, IPPROTO_IP, IP_MULTICAST_IF, (char *)&m_si_me, sizeof(m_si_me));
+    }
     return true;
 }
 

@@ -414,6 +414,7 @@ public:
      * @param address Server address
      * @param port Server port
      */
+    UDPStreamSender(const std::string &id, const std::string& address, unsigned port, const std::string &interface);
     UDPStreamSender(const std::string &id, const std::string& address, unsigned port);
     /**
      * @brief ~UDPStreamSender The destructor automatically calls disconnect
@@ -447,8 +448,9 @@ private:
     std::string m_id;
     std::string m_address;
     unsigned m_port;
+    std::optional<std::string> m_interface;
     int m_socket;
-    struct sockaddr_in m_si_other;
+    struct sockaddr_in m_si_other, m_si_me;
     unsigned m_slen;
     unsigned m_buffer_size;
     unsigned m_header_size;
