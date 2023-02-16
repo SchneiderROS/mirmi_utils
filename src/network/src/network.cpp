@@ -901,8 +901,8 @@ UDPStreamReceiver::UDPStreamReceiver(const std::string& id, unsigned port, unsig
     m_id(id),m_port(port),m_buffer_size(buffer_size),m_header_size(10),m_packet_cnt(0),m_max_lost_packets(max_lost_packets),m_timeout_s(timeout_s),m_timeout_us(timeout_us),m_payload_callback(payload_callback),m_multicast(multicast){
 
 }
-UDPStreamReceiver::UDPStreamReceiver(const std::string& id, unsigned port, unsigned buffer_size, unsigned timeout_s, unsigned timeout_us,unsigned max_lost_packets,std::function<void(std::vector<double>&)> payload_callback,bool multicast, const std::string &interface):
-    m_id(id),m_port(port),m_buffer_size(buffer_size),m_header_size(10),m_packet_cnt(0),m_max_lost_packets(max_lost_packets),m_timeout_s(timeout_s),m_timeout_us(timeout_us),m_payload_callback(payload_callback),m_multicast(multicast), m_interface(interface){
+UDPStreamReceiver::UDPStreamReceiver(const std::string& id, unsigned port, unsigned buffer_size, unsigned timeout_s, unsigned timeout_us,unsigned max_lost_packets,std::function<void(std::vector<double>&)> payload_callback,bool multicast, const std::string &interface, const std::string& address):
+    m_id(id),m_port(port),m_buffer_size(buffer_size),m_header_size(10),m_packet_cnt(0),m_max_lost_packets(max_lost_packets),m_timeout_s(timeout_s),m_timeout_us(timeout_us),m_payload_callback(payload_callback),m_multicast(multicast), m_interface(interface),m_multicast_addr(address){
     m_interface = get_ip_by_hostname(m_interface.value().c_str());
 }
 UDPStreamReceiver::~UDPStreamReceiver(){
@@ -937,7 +937,7 @@ bool UDPStreamReceiver::connect(){
     if(m_multicast){
         struct ip_mreq mreq;
         spdlog::trace("UDPStreamReceiver::Connect(): add multicast options");
-        mreq.imr_multiaddr.s_addr = inet_addr("225.0.0.1");
+        mreq.imr_multiaddr.s_addr = inet_addr(m_multicast_addr.value_or(std::string("225.0.0.1")).c_str());
         if(m_interface.has_value()){
             mreq.imr_interface.s_addr = inet_addr(m_interface.value().c_str());
         }
