@@ -936,7 +936,6 @@ bool UDPStreamReceiver::connect(){
     }
     if(m_multicast){
         struct ip_mreq mreq;
-        spdlog::trace("UDPStreamReceiver::Connect(): add multicast options");
         mreq.imr_multiaddr.s_addr = inet_addr(m_multicast_addr.value_or(std::string("225.0.0.1")).c_str());
         if(m_interface.has_value()){
             mreq.imr_interface.s_addr = inet_addr(m_interface.value().c_str());
@@ -944,6 +943,7 @@ bool UDPStreamReceiver::connect(){
         else{
             mreq.imr_interface.s_addr = htonl(INADDR_ANY);
         }
+        spdlog::debug("UDPStreamReceiver::Connect(): add multicast options - multicast group:"+m_multicast_addr.value() + "over interface "+m_interface.value_or("INADDR_ANY"));
         int err=setsockopt(m_socket,IPPROTO_IP,IP_ADD_MEMBERSHIP,&mreq,sizeof(mreq));
         if(err<0){
             spdlog::error("UDP receiver " + m_id + ": Could not set socket options for multicast.");
