@@ -469,8 +469,10 @@ public:
      * @param timeout_us Timeout in milliseconds
      * @param max_lost_packets Maximum allowed number of packet before connection is closed
      * @param payload_callback Callback to function that accepts the payload for unpacking.
+     * @param interface hostname or ip-address to specify the correct interface connecting to the network
      */
     UDPStreamReceiver(const std::string& id, unsigned port, unsigned buffer_size, unsigned timeout_s, unsigned timeout_us,unsigned max_lost_packets,std::function<void(std::vector<double>&)> payload_callback,bool multicast=false);
+    UDPStreamReceiver(const std::string& id, unsigned port, unsigned buffer_size, unsigned timeout_s, unsigned timeout_us,unsigned max_lost_packets,std::function<void(std::vector<double>&)> payload_callback,bool multicast=false, const std::string &interface);
     /**
      * @brief ~UDPStreamReceiver The destructor automatically calls disconnect
      */
@@ -496,6 +498,7 @@ private:
 
     std::string m_id;
     unsigned m_port;
+    std::optional<std::string> m_interface;
     int m_socket;
     struct sockaddr_in m_si_me;
     unsigned m_slen;
