@@ -907,6 +907,7 @@ UDPStreamReceiver::~UDPStreamReceiver(){
 }
 
 bool UDPStreamReceiver::connect(){
+    spdlog::trace("UDPStreamReceiver::Connect()");
     m_slen = sizeof(m_si_me);
     if((m_socket=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1){ // If socket for incoming connection could not be created...
         spdlog::error("UDP receiver " + m_id + ": Could not create socket: "+std::string(std::strerror(errno)));
@@ -932,7 +933,7 @@ bool UDPStreamReceiver::connect(){
     }
     if(m_multicast){
         struct ip_mreq mreq;
-
+        spdlog::trace("UDPStreamReceiver::Connect(): add multicast options");
         mreq.imr_multiaddr.s_addr = inet_addr("225.0.0.1");
         mreq.imr_interface.s_addr = htonl(INADDR_ANY);
         int err=setsockopt(m_socket,IPPROTO_IP,IP_ADD_MEMBERSHIP,&mreq,sizeof(mreq));
