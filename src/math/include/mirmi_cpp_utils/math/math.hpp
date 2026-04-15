@@ -35,12 +35,20 @@ Eigen::Matrix<double,4,4> concatenate_matrix(const Eigen::Matrix<double,3,3> R,c
 
 /**
  * Creates a 3x3 rotation matrix from three angles according to the RPY-euler convention.
- * @param alpha Angle around x-axis.
+ * @param alpha Angle around z-axis.
  * @param beta Angle around y-axis.
- * @param gamma Angle around z-axis.
+ * @param gamma Angle around x-axis.
  * @return 3x3 rotation matrix.
  */
 Eigen::Matrix<double,3,3> eulerRPY_to_mat(double alpha, double beta, double gamma);
+/**
+ * Creates a 3x3 rotation matrix from three angles according to the extrinsic zyx-euler convention.
+ * @param alpha Angle around z-axis.
+ * @param beta Angle around y-axis.
+ * @param gamma Angle around x-axis.
+ * @return 3x3 rotation matrix.
+ */
+Eigen::Matrix<double,3,3> eulerZYX_to_mat(double alpha, double beta, double gamma);
 
 /**
  * Checks whether the given 3x3 matrix is orthonormal.

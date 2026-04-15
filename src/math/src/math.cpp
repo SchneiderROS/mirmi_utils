@@ -66,23 +66,55 @@ Eigen::Matrix<double,3,3> eulerRPY_to_mat(double alpha, double beta, double gamm
     Eigen::Matrix<double,3,3> R_x;
     R_x<<1,0,0,0,1,0,0,0,1;
 
-    if(gamma!=0){
-        R_z<<cos(gamma),sin(gamma),0,
-                -sin(gamma),cos(gamma),0,
+    if(alpha!=0){
+        R_z<<cos(alpha),-sin(alpha),0,
+                sin(alpha),cos(alpha),0,
                 0,0,1;
     }
     if(beta!=0){
-        R_y<<cos(beta),0,-sin(beta),
+        R_y<<cos(beta),0,sin(beta),
                 0,1,0,
-                sin(beta),0,cos(beta);
+                -sin(beta),0,cos(beta);
     }
-    if(alpha!=0){
+    if(gamma!=0){
         R_x<<1,0,0,
-                0,cos(alpha),sin(alpha),
-                0,-sin(alpha),cos(alpha);
+                0,cos(gamma),-sin(gamma),
+                0,sin(gamma),cos(gamma);
     }
     Eigen::Matrix<double,3,3> tmp=R_y*R_x;
     return R_z*tmp;
+}
+
+Eigen::Matrix<double,3,3> eulerZYX_to_mat(double alpha, double beta, double gamma){
+
+    gamma*=M_PI/180.0;
+    beta*=M_PI/180.0;
+    alpha*=M_PI/180.0;
+
+    Eigen::Matrix<double,3,3> R_z;
+    R_z<<1,0,0,0,1,0,0,0,1;
+    Eigen::Matrix<double,3,3> R_y;
+    R_y<<1,0,0,0,1,0,0,0,1;
+    Eigen::Matrix<double,3,3> R_x;
+    R_x<<1,0,0,0,1,0,0,0,1;
+
+    if(alpha!=0){
+        R_z<<cos(alpha),-sin(alpha),0,
+                sin(alpha),cos(alpha),0,
+                0,0,1;
+    }
+    if(beta!=0){
+        R_y<<cos(beta),0,sin(beta),
+                0,1,0,
+                -sin(beta),0,cos(beta);
+    }
+    if(gamma!=0){
+        R_x<<1,0,0,
+                0,cos(gamma),-sin(gamma),
+                0,sin(gamma),cos(gamma);
+    }
+    Eigen::Matrix<double,3,3> tmp=R_y*R_z;
+    return R_x*tmp;
 }
 
 bool is_orthonormal(Eigen::Matrix<double, 3, 3> M){
