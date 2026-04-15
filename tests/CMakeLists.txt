@@ -3,10 +3,10 @@
 # contact: lars.johannsmeier@tum.de
 
 add_library(${PROJECT_NAME}_test_deps INTERFACE)
-
+find_package(Catch2 REQUIRED)
 target_link_libraries(${PROJECT_NAME}_test_deps
     INTERFACE
-    CONAN_PKG::catch2
+    Catch2::Catch2
     )
 
 include(CTest)

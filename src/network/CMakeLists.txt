@@ -26,6 +26,7 @@ target_include_directories(${MODULE_NAME}
 find_package(nlohmann_json REQUIRED)
 find_package(httplib REQUIRED)
 find_package(simple-websocket-server REQUIRED)
+find_package(Boost REQUIRED)
 
 target_link_libraries(${MODULE_NAME}
     PRIVATE
@@ -35,10 +36,9 @@ target_link_libraries(${MODULE_NAME}
     ${PROJECT_NAME}::files
     spdlog::spdlog
     PUBLIC
-    boost_system
+    Boost::system
     pthread
     crypto
-    $<BUILD_INTERFACE:json-rpc-cxx>
     simple-websocket-server::simple-websocket-server
     nlohmann_json::nlohmann_json
     httplib::httplib

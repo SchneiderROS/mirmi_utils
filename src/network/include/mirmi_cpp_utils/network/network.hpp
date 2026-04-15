@@ -26,9 +26,7 @@
 
 #include "simple-websocket-server/server_ws.hpp"
 #include "simple-websocket-server/client_ws.hpp"
-#include "jsonrpccxx/client.hpp"
-#include "jsonrpccxx/server.hpp"
-#include "jsonrpccxx/iclientconnector.hpp"
+
 #include "httplib.h"
 #include "nlohmann/json.hpp"
 
@@ -130,90 +128,6 @@ protected:
     std::string m_id;
 };
 
-/*! An rpc method server based on json.*/
-class JsonRPCServer: public IJsonMethodServer {
-public:
-    /**
-     * @brief JsonRPCServer Constructor
-     * @param address The address to bind to.
-     * @param port The port to bind to.
-     */
-    [[deprecated("Will be removed in future releases. Please use the robotp2p repo instead (https://gitlab.lrz.de/ge46bax/robotp2p)")]]
-    JsonRPCServer(const std::string &address, unsigned port);
-    /**
-     * @brief ~JsonRPCServer The destructor automatically calls stop_listening
-     */
-    ~JsonRPCServer();
-
-    /**
-     * @brief start_listening The RPC server starts listening.
-     * @return True if server could be started, false otherwise.
-     */
-    bool start_listening();
-    /**
-     * @brief stop_listening Stops the RPC server
-     */
-    void stop_listening();
-    /**
-     * @brief bind_method Binds a function or method as a callback to the server.
-     * @param name Name of the method when calling the server via network.
-     * @param method Pointer to the function or method.
-     * @param arguments Argument names of the function.
-     * @return
-     */
-    bool bind_method(const std::string& name, std::function<nlohmann::json(const nlohmann::json& request)> method, const std::vector<ArgPair>& arguments);
-
-private:
-    std::thread m_server_thread;
-    jsonrpccxx::JsonRpc2Server m_server;
-    httplib::Server m_http_server;
-    const std::string m_address;
-    unsigned m_port;
-};
-
-/*! An RPC client that connects to a server*/
-class JsonRPCClient : public jsonrpccxx::IClientConnector {
-public:
-    /**
-     * @brief JsonRPCClient Client constructor
-     * @param host Hostname of server.
-     * @param port Port of server.
-     * @param timeout Time without answer from server after which the client aborts the call.
-     */
-    [[deprecated("Will be removed in future releases. Please use the robotp2p repo instead (https://gitlab.lrz.de/ge46bax/robotp2p)")]]
-    JsonRPCClient(const char* host, int port, double timeout);
-    ~JsonRPCClient();
-
-    /**
-     * @brief send Sends a json message to the server.
-     * @param method The server method to call.
-     * @param request The method parameters in a json object.
-     * @return True if call was successful, false otherwise.
-     */
-    bool send(const std::string& method, const nlohmann::json& request);
-    /**
-     * @brief get_response Returns the response from the last call.
-     * @param[out] response The response is written into the provided json object.
-     */
-    void get_response(nlohmann::json& response);
-    /**
-     * @brief call_method Factory method to directly call a server.
-     * @param address Server address
-     * @param port Server port
-     * @param method Method on server
-     * @param request Method parameters
-     * @param[out] response Response from server
-     * @param timeout Time without answer from server after which the client aborts the call.
-     * @return True if call was successful, false otherwise.
-     */
-    static bool call_method(const std::string& address, unsigned port, const std::string& method, const nlohmann::json& request, nlohmann::json& response, unsigned timeout=1);
-private:
-    std::string Send(const std::string &request) override;
-    jsonrpccxx::JsonRpcClient m_rpc_client;
-    httplib::Client m_http_client;
-    double m_timeout;
-    nlohmann::json m_response;
-};
 
 /*! A websocket method server based on json.*/
 class JsonWebsocketServer : public IJsonMethodServer{

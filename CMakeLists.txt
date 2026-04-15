@@ -2,11 +2,14 @@
 # All rights reserved.
 # contact: lars.johannsmeier@tum.de
 
-cmake_minimum_required(VERSION 3.16...3.20)
+#message("set -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=cmake/conan_provider.cmake")
+#set(CMAKE_PROJECT_TOP_LEVEL_INCLUDES cmake/conan_provider.cmake)
+
+cmake_minimum_required(VERSION 3.16...3.26)
 
 set(PROJECT_VERSION_MAJOR 1)
 set(PROJECT_VERSION_MINOR 7)
-set(PROJECT_VERSION_PATCH 2)
+set(PROJECT_VERSION_PATCH 4)
 set(PROJECT_VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH})
 
 project(mirmi_cpp_utils VERSION ${PROJECT_VERSION}
